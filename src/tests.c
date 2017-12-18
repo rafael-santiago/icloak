@@ -20,6 +20,8 @@ KUTE_DECLARE_TEST_CASE(icloak_mk_ko_perm_tests);
 
 KUTE_DECLARE_TEST_CASE(icloak_ko_tests);
 
+KUTE_MAIN(icloak_test_monkey);
+
 KUTE_TEST_CASE(icloak_ko_nullity_tests)
     KUTE_ASSERT(icloak_ko(NULL) != 0);
     KUTE_ASSERT(icloak_ko("parangaricutirimirruru") != 0);
@@ -50,4 +52,4 @@ KUTE_TEST_CASE(icloak_test_monkey)
     KUTE_RUN_TEST(icloak_ko_tests);
 KUTE_TEST_CASE_END
 
-KUTE_MAIN(icloak_test_monkey);
+#undef ICLOAK_MODNAME

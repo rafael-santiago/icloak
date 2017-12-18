@@ -25,7 +25,7 @@ icloak-test.preloading() {
     }
 }
 
-project icloak-test : toolset $toolset_name : "test.c", $includes, $cflags, $libraries, $ldflags, "icloak-test";
+project icloak-test : toolset $toolset_name : "tests.c", $includes, $cflags, $libraries, $ldflags, "icloak-test";
 
 icloak-test.prologue() {
     $includes.add_item(hefesto.sys.pwd());
@@ -43,5 +43,3 @@ icloak-test.epilogue() {
         }
     }
 }
-
-
