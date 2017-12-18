@@ -40,7 +40,7 @@ Once the build system well installed, you should clone another repo of mine:
 
 #else
 
-# error "what you are doing here?"
+# error "what are you doing here?"
 
 #endif
 
