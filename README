@@ -90,4 +90,4 @@ By the way, in order to make the module non permanent you should use the macro i
 
     icloak_mk_ko_nonperm("hidden_mod", hidden_mod_exit);
 
-All these 'invisibility macros' returns zero on success.
+All these 'invisibility macros' return zero on success.
