@@ -27,8 +27,22 @@
 
 extern linker_file_list_t linker_files;
 
+#if __FreeBSD__ > 6
 // TIP(Rafael): In older versions it will not work because in older kernels we have 'struct mtx kld_mtx' instead.
 extern struct sx kld_sx;
+
+#define kld_lock sx_xlock(&kld_sx);
+
+#define kld_unlock sx_xunlock(&kld_sx);
+
+#else
+extern struct mtx kld_mtx;
+
+#define kld_lock mtx_lock(&kld_mtx);
+
+#define kld_unlock mtx_unlock(&kld_mtx);
+
+#endif
 
 extern int next_file_id;
 

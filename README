@@ -76,11 +76,24 @@ Pretty simple. All you should do is to include the main icloak header:
 
     icloak_ko("hidden_mod");
 
+There is a trick to get a better invisibility in FreeBSD, you should let the kernel object file with the same name used for naming your module during the struct 'moduledata_t' definition.
+
+You can also include two icloak_ko():
+
+    // One for the kernel object file.
+    icloak_ko("hidden_mod.ko");
+
+    // Another for the module name.
+    // This second will return a non zero value...
+    // Just ignore this return...
+    // This return is only saying 'You really should simplify this stuff' ;)
+    icloak_ko("rootkit_sample");
+
 You also can make your LKM permanent by using the macro icloak_mk_ko_perm():
 
     icloak_mk_ko_perm("hidden_mod", NULL);
 
-The second argument of icloak_mk_ko_perm() is a (void **). When not null it will point to the old exit module's function. This is handy when you intended to make it non permanent again:
+The second argument of icloak_mk_ko_perm() is a (void **). When not null it will point to the old exit module's function. This is handy when you intend to make it non permanent again:
 
     void *hidden_mod_exit;
 
