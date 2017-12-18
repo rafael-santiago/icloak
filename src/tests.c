@@ -10,7 +10,11 @@
 
 #if defined(ICLOAK_TESTS)
 
-#define ICLOAK_MODNAME "icloak_test"
+# if defined(__linux__)
+#  define ICLOAK_MODNAME "icloak_test"
+# elif defined(__FreeBSD__)
+#  define ICLOAK_MODNAME "icloak-test"
+# endif
 
 KUTE_DECLARE_TEST_CASE(icloak_test_monkey);
 
