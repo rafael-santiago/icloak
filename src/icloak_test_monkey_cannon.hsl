@@ -1,0 +1,64 @@
+#
+#                                Copyright (C) 2017 by Rafael Santiago
+#
+# This is a free software. You can redistribute it and/or modify under
+# the terms of the GNU General Public License version 2.
+#
+#
+
+function kBoOm(ko type string) : result type int {
+    var exit_code type int;
+
+    if (hefesto.sys.os_name() == "linux") {
+        $exit_code = hefesto.sys.run("insmod " + $ko);
+    } else if (hefesto.sys.os_name() == "freebsd") {
+        if ($ko.match("^\\./") == 0) {
+            $ko = "./" + $ko;
+        }
+        $exit_code = hefesto.sys.run("kldload " + $ko);
+    }
+
+    $exit_code = try_to_unload($ko, "icloak_test");
+
+    result $exit_code;
+}
+
+local function try_to_unload(ko type string, module_name type string) : result type int {
+    var exit_code type int;
+
+    if (hefesto.sys.os_name() == "linux") {
+        $exit_code = hefesto.sys.run("rmmod " + $ko);
+    } else if (hefesto.sys.os_name() == "freebsd") {
+        if ($ko.match("^\\./") == 0) {
+            $ko = "./" + $ko;
+        }
+        $exit_code = hefesto.sys.run("kldunload " + $ko);
+    }
+
+    if ($exit_code == 0) {
+        hefesto.sys.echo("\nTEST ERROR: The module '" + $module_name + "' could be unloaded!\n");
+        result 1;
+    }
+
+    var modules_listing type string;
+
+    $modules_listing = ".ko-listing";
+
+    if (hefesto.sys.os_name() == "linux") {
+        hefesto.sys.run("lsmod > " + $modules_listing);
+    } else if (hefesto.sys.os_name() == "freebsd") {
+        hefesto.sys.run("kldstat > " + $modules_listing);
+    }
+
+    var lines type list;
+
+    $lines = hefesto.sys.lines_from_file($modules_listing, "^" + $module_name);
+
+    hefesto.sys.run("rm " + $modules_listing);
+
+    if ($lines.count() > 0) {
+        hefesto.sys.echo("\nTEST ERROR: The module '" + $module_name + "' is not invisible!\n");
+    }
+
+    result $lines.count();
+}

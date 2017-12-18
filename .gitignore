@@ -1,0 +1,6 @@
+.icloak*
+*.cmd
+*.ko
+*.mod.c
+*.o
+src/.tmp_versions
