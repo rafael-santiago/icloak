@@ -11,7 +11,7 @@
 #if defined(__linux__)
 # include <linux/incantations.h>
 # elif defined(__FreeBSD__)
-// TODO(Rafael): The FreeBSD incantations.
+# include <freebsd/incantations.h>
 # else
 # error "Not supported platform."
 # endif

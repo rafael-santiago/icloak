@@ -4,3 +4,8 @@
 *.mod.c
 *.o
 src/.tmp_versions
+src/machine
+src/x86
+export_syms
+*.kld
+
