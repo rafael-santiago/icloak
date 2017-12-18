@@ -75,7 +75,7 @@ int native_icloak_mk_ko_nonperm(const char *name, void *exit) {
 
     preempt_disable();
 
-    if ((lkm = find_lkm(name)) != NULL) {
+    if ((lkm = find_lkm(name)) != NULL && lkm->exit == NULL) {
         lkm->exit = exit;
     }
 

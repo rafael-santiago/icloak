@@ -8,7 +8,7 @@
 #include <cutest/src/kutest.h>
 #include <icloak.h>
 
-#define ICLOAK_MODULE_NAME "icloak_test"
+#define ICLOAK_MODNAME "icloak_test"
 
 KUTE_DECLARE_TEST_CASE(icloak_test_monkey);
 
@@ -34,9 +34,13 @@ KUTE_TEST_CASE(icloak_mk_ko_perm_nullity_tests)
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_mk_ko_perm_tests)
+    void *exit = NULL;
+    KUTE_ASSERT(icloak_mk_ko_perm(ICLOAK_MODNAME, &exit) == 0);
+    KUTE_ASSERT(icloak_mk_ko_unperm(ICLOAK_MODNAME, exit) == 0);
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_ko_tests)
+    KUTE_ASSERT(icloak_ko(ICLOAK_MODNAME) == 0);
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_test_monkey)
