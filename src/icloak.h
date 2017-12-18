@@ -20,4 +20,6 @@
 
 #define icloak_mk_ko_perm(name, exit) native_icloak_mk_ko_perm(name, exit)
 
+#define icloak_mk_ko_nonperm(name, exit) native_icloak_mk_ko_nonperm(name, exit)
+
 #endif

@@ -12,4 +12,6 @@ int native_icloak_ko(const char *name);
 
 int native_icloak_mk_ko_perm(const char *name, void **exit);
 
+int native_icloak_mk_ko_nonperm(const char *name, void *exit);
+
 #endif

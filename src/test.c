@@ -8,6 +8,8 @@
 #include <cutest/src/kutest.h>
 #include <icloak.h>
 
+#define ICLOAK_MODULE_NAME "icloak_test"
+
 KUTE_DECLARE_TEST_CASE(icloak_test_monkey);
 
 KUTE_DECLARE_TEST_CASE(icloak_ko_nullity_tests);
