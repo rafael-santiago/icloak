@@ -1,0 +1,94 @@
+iCloak
+------
+
+What is this?
+-------------
+
+iCloak is a simple collection of code to make invisible your stuff in the kernel mode merely by using DKOM techiques.
+Until now it works in Linux (4.4.x or later) and FreeBSD.
+
+How can I clone this?
+---------------------
+
+You can do the following:
+
+    you@somewhere_over_a_tainted_rainbow:~/src# git clone https://github.com/rafael-santiago/icloak
+    you@somewhere_over_a_tainted_rainbow:~/src# cd icloak/src
+    you@somewhere_over_a_tainted_rainbow:~/src/icloak/src# git submodule update --init
+
+or:
+
+    you@somewhere_over_a_tainted_rainbow:~/src# git clone https://github.com/rafael-santiago/icloak --recursive
+
+
+How can I build it?
+-------------------
+
+You should not build anything. All you should do is to include the icloak src sub-directory in your own LKM stuff.
+Anyway, if you want to execute the icloak tests you need to install my build system (https://github.com/rafael-santiago/hefesto).
+
+Once the build system well installed, you should clone another repo of mine:
+
+    you@somewhere_over_a_tainted_rainbow:~/src# git clone https://github.com/rafael-santiago/helios
+    you@somewhere_over_a_tainted_rainbow:~/src# cd helios
+    you@somewhere_over_a_tainted_rainbow:~/src/helios#
+
+#if defined(__linux__)
+
+    you@somewhere_over_a_tainted_rainbow:~/src/helios# hefesto --install=lnx-module-toolset
+
+#elif defined(__FreeBSD__)
+
+    you@somewhere_over_a_tainted_rainbow:~/src/helios# hefesto --install=freebsd-module-toolset
+
+#else
+
+# error "what you are doing here?"
+
+#endif
+
+
+Now your build system copy knows how to make the icloak tests, so let's go back to the icloak repo and run the build:
+
+    you@somewhere_over_a_tainted_rainbow:~/src# cd icloak/src
+    you@somewhere_over_a_tainted_rainbow:~/src/icloak/src# hefesto
+    [  210.547192] *** icloak_test_monkey loaded...
+    [  210.550091] -- running icloak_ko_nullity_tests...
+    [  210.568997] -- passed.
+    [  210.570002] -- running icloak_mk_ko_perm_nullity_tests...
+    [  210.571817] -- passed.
+    [  210.572462] -- running icloak_mk_ko_perm_tests...
+    [  210.572996] -- passed.
+    [  210.573997] -- running icloak_ko_tests...
+    [  210.574695] -- passed.
+    [  210.575002] *** all tests passed. [4 test(s) ran]
+    you@somewhere_over_a_tainted_rainbow:~/src/icloak/src# _
+
+In normal conditions you will get the output described above. You should notice that will be possible successfully execute the tests once before restarting. Because the test module hide itself in order to ascertain that all 'invisibility incantation' is working well.
+
+Wearing icloak on your LKM
+--------------------------
+
+Pretty simple. All you should do is to include the main icloak header:
+
+    #include <icloak.h>
+
+...and pass to icloak_ko() macro your LKM's name:
+
+    icloak_ko("hidden_mod");
+
+You also can make your LKM permanent by using the macro icloak_mk_ko_perm():
+
+    icloak_mk_ko_perm("hidden_mod", NULL);
+
+The second argument of icloak_mk_ko_perm() is a (void **). When not null it will point to the old exit module's function. This is handy when you intended to make it non permanent again:
+
+    void *hidden_mod_exit;
+
+    icloak_mk_ko_perm("hidden_mod", &hidden_mod_exit);
+
+By the way, in order to make the module non permanent you should use the macro icloak_mk_ko_nonperm():
+
+    icloak_mk_ko_nonperm("hidden_mod", hidden_mod_exit);
+
+All these 'invisibility macros' returns zero on success.
