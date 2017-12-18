@@ -90,7 +90,6 @@ static struct module *find_lkm(const char *name) {
     list_for_each_entry(p, g_modules, list) {
         if (strcmp(p->name, name) == 0) {
             return p;
-            break;
         }
     }
 
