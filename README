@@ -4,7 +4,7 @@ iCloak
 What is this?
 -------------
 
-iCloak is a simple collection of code to make invisible your stuff in the kernel mode merely by using DKOM techiques. Until now it works in Linux (4.4.x or later) and FreeBSD.
+iCloak is a simple collection of codes for making invisible your stuff in kernel mode. This is done merely by using DKOM techiques. Until now it works in Linux (4.4.x or later) and FreeBSD.
 
 How can I clone this?
 ---------------------
@@ -19,12 +19,10 @@ or:
 
     you@somewhere_over_a_tainted_rainbow:~/src# git clone https://github.com/rafael-santiago/icloak --recursive
 
-
 How can I build it?
 -------------------
 
-You should not build anything. All you should do is to include the icloak src sub-directory in your own LKM stuff.
-Anyway, if you want to execute the icloak tests you need to install my build system (https://github.com/rafael-santiago/hefesto).
+You should not build anything. All you should do is to include the icloak src sub-directory and the platform dependent code (within src/<platform-name>) in your own LKM stuff. Anyway, if you want to execute the icloak tests you need to install my build system (https://github.com/rafael-santiago/hefesto).
 
 Once the build system well installed, you should clone another repo of mine:
 
@@ -46,6 +44,8 @@ Once the build system well installed, you should clone another repo of mine:
 
 #endif
 
+    you@somewhere_over_a_tainted_rainbow:~/src/helios# cd ..
+    you@somewhere_over_a_tainted_rainbow:~/src# rm -rf helios
 
 Now your build system copy knows how to make the icloak tests, so let's go back to the icloak repo and run the build:
 
@@ -63,7 +63,7 @@ Now your build system copy knows how to make the icloak tests, so let's go back 
     [  210.575002] *** all tests passed. [4 test(s) ran]
     you@somewhere_over_a_tainted_rainbow:~/src/icloak/src# _
 
-In normal conditions you will get the output described above. You should notice that will be possible successfully execute the tests once before restarting. Because the test module hide itself in order to ascertain that all 'invisibility incantation' is working well.
+In normal conditions you will get the output described above. You should notice that will be possible successfully execute the tests only once before restarting. Because the test module hide itself in order to ascertain that all 'invisibility incantation' is working well.
 
 Wearing icloak on your LKM
 --------------------------
