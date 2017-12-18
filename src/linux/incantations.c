@@ -70,7 +70,7 @@ int native_icloak_mk_ko_nonperm(const char *name, void *exit) {
     }
 
     if (g_modules == NULL || name == NULL || exit == NULL) {
-        return 1
+        return 1;
     }
 
     preempt_disable();

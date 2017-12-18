@@ -36,7 +36,7 @@ KUTE_TEST_CASE_END
 KUTE_TEST_CASE(icloak_mk_ko_perm_tests)
     void *exit = NULL;
     KUTE_ASSERT(icloak_mk_ko_perm(ICLOAK_MODNAME, &exit) == 0);
-    KUTE_ASSERT(icloak_mk_ko_unperm(ICLOAK_MODNAME, exit) == 0);
+    KUTE_ASSERT(icloak_mk_ko_nonperm(ICLOAK_MODNAME, exit) == 0);
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_ko_tests)
