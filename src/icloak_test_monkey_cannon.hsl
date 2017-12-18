@@ -10,12 +10,19 @@ function kBoOm(ko type string) : result type int {
     var exit_code type int;
 
     if (hefesto.sys.os_name() == "linux") {
+        hefesto.sys.run("dmesg -n4");
         $exit_code = hefesto.sys.run("insmod " + $ko);
     } else if (hefesto.sys.os_name() == "freebsd") {
         if ($ko.match("^\\./") == 0) {
             $ko = "./" + $ko;
         }
         $exit_code = hefesto.sys.run("kldload " + $ko);
+    }
+
+    if ($exit_code != 0) {
+        hefesto.sys.echo("\nTEST ERROR: The test module '" + $ko + "' could not be loaded!\n" +
+                         "TIP: Have you ever successfully run the tests before? If yes, restart this machine. ;)\n\n");
+        result $exit_code;
     }
 
     $exit_code = try_to_unload($ko, "icloak_test");
@@ -36,7 +43,7 @@ local function try_to_unload(ko type string, module_name type string) : result t
     }
 
     if ($exit_code == 0) {
-        hefesto.sys.echo("\nTEST ERROR: The module '" + $module_name + "' could be unloaded!\n");
+        hefesto.sys.echo("\nTEST ERROR: The module '" + $module_name + "' could be unloaded!\n\n");
         result 1;
     }
 
@@ -57,7 +64,7 @@ local function try_to_unload(ko type string, module_name type string) : result t
     hefesto.sys.run("rm " + $modules_listing);
 
     if ($lines.count() > 0) {
-        hefesto.sys.echo("\nTEST ERROR: The module '" + $module_name + "' is not invisible!\n");
+        hefesto.sys.echo("\nTEST ERROR: The module '" + $module_name + "' is not invisible!\n\n");
     }
 
     result $lines.count();
