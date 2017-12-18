@@ -4,8 +4,7 @@ iCloak
 What is this?
 -------------
 
-iCloak is a simple collection of code to make invisible your stuff in the kernel mode merely by using DKOM techiques.
-Until now it works in Linux (4.4.x or later) and FreeBSD.
+iCloak is a simple collection of code to make invisible your stuff in the kernel mode merely by using DKOM techiques. Until now it works in Linux (4.4.x or later) and FreeBSD.
 
 How can I clone this?
 ---------------------

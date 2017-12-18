@@ -8,6 +8,8 @@
 #include <cutest/src/kutest.h>
 #include <icloak.h>
 
+#if defined(ICLOAK_TESTS)
+
 #define ICLOAK_MODNAME "icloak_test"
 
 KUTE_DECLARE_TEST_CASE(icloak_test_monkey);
@@ -53,3 +55,5 @@ KUTE_TEST_CASE(icloak_test_monkey)
 KUTE_TEST_CASE_END
 
 #undef ICLOAK_MODNAME
+
+#endif

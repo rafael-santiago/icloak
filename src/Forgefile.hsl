@@ -28,6 +28,7 @@ icloak-test.preloading() {
 project icloak-test : toolset $toolset_name : "tests.c", $includes, $cflags, $libraries, $ldflags, "icloak-test";
 
 icloak-test.prologue() {
+    $cflags.add_item("-DICLOAK_TESTS=1");
     $includes.add_item(hefesto.sys.pwd());
     $includes.add_item(hefesto.sys.make_path(hefesto.sys.pwd(), hefesto.sys.os_name()));
 }
