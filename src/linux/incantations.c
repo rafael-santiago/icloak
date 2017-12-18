@@ -86,9 +86,6 @@ int native_icloak_mk_ko_nonperm(const char *name, void *exit) {
 
 static struct module *find_lkm(const char *name) {
     struct module *p;
-    size_t name_size;
-
-    name_size = strlen(name);
 
     list_for_each_entry(p, g_modules, list) {
         if (strcmp(p->name, name) == 0) {
