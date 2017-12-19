@@ -25,7 +25,16 @@ function kBoOm(ko type string) : result type int {
         result $exit_code;
     }
 
-    $exit_code = try_to_unload($ko, "icloak_test");
+    var mod_name type string;
+
+    if (hefesto.sys.os_name() == "linux") {
+        $mod_name = "icloak_test";
+    } else if (hefesto.sys.os_name() == "freebsd") {
+        $mod_name = $ko;
+        $mod_name.replace("^\\./", "");
+    }
+
+    $exit_code = try_to_unload($ko, $mod_name);
 
     result $exit_code;
 }
@@ -58,8 +67,17 @@ local function try_to_unload(ko type string, module_name type string) : result t
     }
 
     var lines type list;
+    var regex type string;
 
-    $lines = hefesto.sys.lines_from_file($modules_listing, "^" + $module_name);
+    if (hefesto.sys.os_name() == "linux") {
+        $regex = "^" + $module_name;
+    } else if (hefesto.sys.os_name() == "freebsd") {
+        $regex = $module_name + "$";
+        $regex.replace("\\.", "\\.");
+        $regex = ".*" + $regex;
+    }
+
+    $lines = hefesto.sys.lines_from_file($modules_listing, $regex);
 
     hefesto.sys.run("rm " + $modules_listing);
 
