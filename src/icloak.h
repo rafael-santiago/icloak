@@ -16,6 +16,9 @@
 # error "Not supported platform."
 # endif
 
+#include <utils/memory.h>
+#include <utils/icloak_ctx.h>
+
 #define icloak_ko(name) native_icloak_ko(name)
 
 #define icloak_mk_ko_perm(name, exit) native_icloak_mk_ko_perm(name, exit)
