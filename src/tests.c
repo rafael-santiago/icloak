@@ -28,6 +28,8 @@ KUTE_DECLARE_TEST_CASE(icloak_ko_tests);
 
 KUTE_DECLARE_TEST_CASE(icloak_filename_pattern_ctx_tests);
 
+KUTE_DECLARE_TEST_CASE(strglob_tests);
+
 KUTE_MAIN(icloak_test_monkey);
 
 KUTE_TEST_CASE(icloak_ko_nullity_tests)
@@ -93,10 +95,42 @@ KUTE_TEST_CASE(icloak_filename_pattern_ctx_tests)
     KUTE_ASSERT(head == NULL);
 KUTE_TEST_CASE_END
 
+KUTE_TEST_CASE(strglob_tests)
+    struct strglob_test {
+        char *str;
+        char *pattern;
+        int result;
+    };
+    struct strglob_test tests[] = {
+        {                       "abcdef",          "*cde*", 1 },
+        {                          "abc",            "a?c", 1 },
+        {                          "a.c",            "a?c", 1 },
+        {                           "a0",  "a[1234567890]", 1 },
+        {                           "a1",  "a[1234567890]", 1 },
+        {                           "a2",  "a[1234567890]", 1 },
+        {                           "a3",  "a[1234567890]", 1 },
+        {                           "a4",  "a[1234567890]", 1 },
+        {                           "a5",  "a[1234567890]", 1 },
+        {                           "a6",  "a[1234567890]", 1 },
+        {                           "a7",  "a[1234567890]", 1 },
+        {                           "a8",  "a[1234567890]", 1 },
+        {                           "a9",  "a[1234567890]", 1 },
+        { "abcdefghijhklmnopqrstuvwxyz1", " a[1234567890]", 0 },
+        { "abcdefghijhklmnopqrstuvwxyz0", "a*[1234567890]", 1 },
+        {                            "x",             "a*", 0 }
+    };
+    size_t tests_nr = sizeof(tests) / sizeof(tests[0]), t;
+
+    for (t = 0; t < tests_nr; t++) {
+        KUTE_ASSERT(strglob(tests[t].str, tests[t].pattern) == tests[t].result);
+    }
+KUTE_TEST_CASE_END
+
 KUTE_TEST_CASE(icloak_test_monkey)
+    KUTE_RUN_TEST(icloak_filename_pattern_ctx_tests);
+    KUTE_RUN_TEST(strglob_tests);
     KUTE_RUN_TEST(icloak_ko_nullity_tests);
     KUTE_RUN_TEST(icloak_mk_ko_perm_nullity_tests);
-    KUTE_RUN_TEST(icloak_filename_pattern_ctx_tests);
     //KUTE_RUN_TEST(icloak_mk_ko_perm_tests);
     //KUTE_RUN_TEST(icloak_ko_tests);
 KUTE_TEST_CASE_END

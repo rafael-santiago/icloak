@@ -18,6 +18,7 @@
 
 #include <utils/memory.h>
 #include <utils/icloak_ctx.h>
+#include <utils/strglob.h>
 
 #define icloak_ko(name) native_icloak_ko(name)
 
