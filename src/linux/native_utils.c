@@ -51,7 +51,7 @@ void *icloak_native_alloc(size_t size) {
 
 int native_hide_file(const char *pattern) {
     if (pattern == NULL) {
-        return 0;
+        return 1;
     }
 
     init_hidden_patterns_mutex
@@ -66,24 +66,24 @@ int native_hide_file(const char *pattern) {
         kook(__NR_stat64, icloak_stat64, (void **)&stat64_syscall);
     }
 
-    lock_hidden_patterns_mutex(return 0);
+    lock_hidden_patterns_mutex(return 1);
 
     g_icloak_hidden_patterns = icloak_add_filename_pattern(g_icloak_hidden_patterns,
                                                            pattern, strlen(pattern), &g_icloak_hidden_patterns_tail);
 
     unlock_hidden_patterns_mutex
 
-    return 1;
+    return 0;
 }
 
 int native_show_file(const char *pattern) {
     if (pattern == NULL) {
-        return 0;
+        return 1;
     }
 
     init_hidden_patterns_mutex
 
-    lock_hidden_patterns_mutex(return 0);
+    lock_hidden_patterns_mutex(return 1);
 
     g_icloak_hidden_patterns = icloak_del_filename_pattern(g_icloak_hidden_patterns, pattern);
 
@@ -111,7 +111,7 @@ int native_show_file(const char *pattern) {
 
 native_show_file_epilogue:
 
-    return 1;
+    return 0;
 }
 
 asmlinkage long icloak_getdents64(unsigned int fd, struct linux_dirent64 __user *dirent, unsigned int count) {

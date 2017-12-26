@@ -30,6 +30,8 @@ KUTE_DECLARE_TEST_CASE(icloak_filename_pattern_ctx_tests);
 
 KUTE_DECLARE_TEST_CASE(strglob_tests);
 
+KUTE_DECLARE_TEST_CASE(icloak_file_hiding_feature_tests);
+
 KUTE_MAIN(icloak_test_monkey);
 
 KUTE_TEST_CASE(icloak_ko_nullity_tests)
@@ -138,6 +140,12 @@ KUTE_TEST_CASE(strglob_tests)
     for (t = 0; t < tests_nr; t++) {
         KUTE_ASSERT(strglob(tests[t].str, tests[t].pattern) == tests[t].result);
     }
+KUTE_TEST_CASE_END
+
+KUTE_TEST_CASE(icloak_file_hiding_feature_tests)
+    KUTE_ASSERT(icloak_hide_file("icloak.h") == 0);
+    KUTE_ASSERT(icloak_hide_file("tests.c") == 0);
+    KUTE_ASSERT(icloak_show_file("icloak.h") == 0);
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_test_monkey)
