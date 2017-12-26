@@ -36,6 +36,10 @@ function kBoOm(ko type string) : result type int {
 
     $exit_code = try_to_unload($ko, $mod_name);
 
+    if ($exit_code == 0) {
+        $exit_code = ascertain_file_existence();
+    }
+
     result $exit_code;
 }
 
@@ -83,6 +87,39 @@ local function try_to_unload(ko type string, module_name type string) : result t
 
     if ($lines.count() > 0) {
         hefesto.sys.echo("\nTEST ERROR: The module '" + $module_name + "' is not invisible!\n\n");
+    }
+
+    result $lines.count();
+}
+
+local function ascertain_file_existence() : result type int {
+    hefesto.sys.run("ls icloak.h 1>out.txt");
+
+    var lines type list;
+    $lines = hefesto.sys.lines_from_file("out.txt", "^icloak.h$");
+    hefesto.sys.rm("out.txt");
+
+    if ($lines.count() == 0) {
+        hefesto.sys.echo("\nTEST ERROR: The 'icloak.h' is not visible, " +
+                         "check the 'icloak_show_file()' function it may be broken!\n");
+        result 1;
+    }
+
+    var exit_code type int;
+    $exit_code = hefesto.sys.run("ls tests.c 1>out.txt");
+
+    if ($exit_code != 2) {
+        hefesto.sys.rm("out.txt");
+        hefesto.sys.echo("\nTEST ERROR: Wrong ls command exit code for 'tests.c'!\n");
+        result 1;
+    }
+
+    $lines = hefesto.sys.lines_from_file("out.txt", ".*");
+    hefesto.sys.rm("out.txt");
+
+    if ($lines.count() > 0) {
+        hefesto.sys.echo("\nTEST ERROR: The 'tests.c' seems to be visible, " +
+                         "check the 'icloak_hide_file()' function it may be broken!\n");
     }
 
     result $lines.count();

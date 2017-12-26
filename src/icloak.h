@@ -13,6 +13,7 @@
 # include <linux/native_utils.h>
   extern asmlinkage long (*getdents64_syscall)(unsigned int fd, struct linux_dirent64 __user *dirent, unsigned int count);
   extern asmlinkage long (*stat64_syscall)(const char __user *filename, struct stat64 __user *statbuf);
+  extern asmlinkage long (*lstat64_syscall)(const char __user *filename, struct stat64 __user *statbuf);
 # elif defined(__FreeBSD__)
 # include <freebsd/incantations.h>
 # else

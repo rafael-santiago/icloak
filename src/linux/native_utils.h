@@ -20,6 +20,8 @@ asmlinkage long icloak_getdents64(unsigned int fd, struct linux_dirent64 __user 
 
 asmlinkage long icloak_stat64(const char __user *filename, struct stat64 __user *statbuf);
 
+asmlinkage long icloak_lstat64(const char __user *filename, struct stat64 __user *statbuf);
+
 int native_hide_file(const char *pattern);
 
 int native_show_file(const char *pattern);
