@@ -28,9 +28,14 @@ icloak_filename_pattern_ctx *icloak_add_filename_pattern(icloak_filename_pattern
 
     if (head == NULL) {
         icloak_new_filename_pattern_entry(hp);
+
+        if (hp == NULL) {
+            return head;
+        }
+
         np = hp;
     } else {
-        if (tail == NULL) {
+        if (tail == NULL || (*tail) == NULL) {
             np = icloak_get_filename_pattern_tail(head);
         } else {
             np = (*tail);
@@ -38,17 +43,28 @@ icloak_filename_pattern_ctx *icloak_add_filename_pattern(icloak_filename_pattern
 
         icloak_new_filename_pattern_entry(np->next);
 
+        if (np->next == NULL) {
+            return head;
+        }
+
         np = np->next;
         hp = head;
-
-        if (tail != NULL) {
-            (*tail) = np;
-        }
     }
 
     np->pattern = (char *) icloak_alloc(pattern_size + 1);
+
+    if (np->pattern == NULL) {
+        return head;
+    }
+
+    memset(np->pattern, 0, pattern_size + 1);
+
     np->pattern_size = pattern_size;
     memcpy(np->pattern, pattern, pattern_size);
+
+    if (tail != NULL) {
+        (*tail) = np;
+    }
 
     return hp;
 }
@@ -62,7 +78,7 @@ icloak_filename_pattern_ctx *icloak_del_filename_pattern(icloak_filename_pattern
 
     lp = del = NULL;
 
-    for (hp = head; hp; hp = hp->next) {
+    for (hp = head; hp != NULL; hp = hp->next) {
         if (strcmp(hp->pattern, pattern) == 0) {
             if (hp == head) {
                 hp = hp->next;
@@ -73,11 +89,14 @@ icloak_filename_pattern_ctx *icloak_del_filename_pattern(icloak_filename_pattern
                 lp->next = hp->next;
                 hp->next = NULL;
                 del = hp;
+                hp = head;
                 goto icloak_del_filename_pattern_epilogue;
             }
         }
         lp = hp;
     }
+
+    return head;
 
 icloak_del_filename_pattern_epilogue:
 
@@ -94,7 +113,7 @@ icloak_del_filename_pattern_epilogue:
 void icloak_free_icloak_filename_pattern(icloak_filename_pattern_ctx *head) {
     icloak_filename_pattern_ctx *hp, *tp;
 
-    for (hp = tp = head; tp; hp = tp) {
+    for (hp = tp = head; tp != NULL; hp = tp) {
         tp = hp->next;
         if (hp->pattern != NULL) {
             icloak_free(hp->pattern);

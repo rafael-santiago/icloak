@@ -54,25 +54,49 @@ KUTE_TEST_CASE(icloak_ko_tests)
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_filename_pattern_ctx_tests)
-    icloak_filename_pattern_ctx *plist = NULL, *tail = NULL;
+    icloak_filename_pattern_ctx *head = NULL, *tail = NULL;
+    struct expected_sequence {
+        char *pattern;
+        size_t pattern_size;
+    };
+    struct expected_sequence expected[] = {
+        { "abc", 3 },
+        { "foobar", 6 },
+        { "*m", 2 },
+        { "e*", 2 }
+    };
+    size_t expected_nr = sizeof(expected) / sizeof(expected[0]), e;
 
-    plist = icloak_add_filename_pattern(plist, "abc", 3, &tail);
-    plist = icloak_add_filename_pattern(plist, "foobar", 6, &tail);
-    plist = icloak_add_filename_pattern(plist, "*m", 2, NULL);
-    plist = icloak_add_filename_pattern(plist, "e*", 2, NULL);
+    for (e = 0; e < expected_nr; e++) {
+        if (e < (expected_nr / 2)) {
+            head = icloak_add_filename_pattern(head, expected[e].pattern, expected[e].pattern_size, &tail);
+        } else {
+            head = icloak_add_filename_pattern(head, expected[e].pattern, expected[e].pattern_size, NULL);
+        }
+        KUTE_ASSERT(head != NULL);
+    }
 
-    plist = icloak_del_filename_pattern(plist, "abcd");
+    for (e = 0, tail = head; e < expected_nr; e++, tail = tail->next) {
+        KUTE_ASSERT(tail->pattern_size == expected[e].pattern_size);
+        KUTE_ASSERT(memcmp(tail->pattern, expected[e].pattern, tail->pattern_size) == 0);
+    }
 
-    plist = icloak_del_filename_pattern(plist, "abc");
-    plist = icloak_del_filename_pattern(plist, "*m");
-    plist = icloak_del_filename_pattern(plist, "foobar");
-    plist = icloak_del_filename_pattern(plist, "e*");
-
+    head = icloak_del_filename_pattern(head, "abcd");
+    KUTE_ASSERT(head != NULL);
+    head = icloak_del_filename_pattern(head, "abc");
+    KUTE_ASSERT(head != NULL);
+    head = icloak_del_filename_pattern(head, "*m");
+    KUTE_ASSERT(head != NULL);
+    head = icloak_del_filename_pattern(head, "foobar");
+    KUTE_ASSERT(head != NULL);
+    head = icloak_del_filename_pattern(head, "e*");
+    KUTE_ASSERT(head == NULL);
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_test_monkey)
     KUTE_RUN_TEST(icloak_ko_nullity_tests);
     KUTE_RUN_TEST(icloak_mk_ko_perm_nullity_tests);
+    KUTE_RUN_TEST(icloak_filename_pattern_ctx_tests);
     //KUTE_RUN_TEST(icloak_mk_ko_perm_tests);
     //KUTE_RUN_TEST(icloak_ko_tests);
 KUTE_TEST_CASE_END
