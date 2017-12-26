@@ -29,9 +29,16 @@ project icloak-test : toolset $toolset_name : "tests.c", $includes, $cflags, $li
 
 icloak-test.prologue() {
     $cflags.add_item("-DICLOAK_TESTS=1");
+
     $includes.add_item(hefesto.sys.pwd());
     $includes.add_item(hefesto.sys.make_path(hefesto.sys.pwd(), "utils"));
     $includes.add_item(hefesto.sys.make_path(hefesto.sys.pwd(), hefesto.sys.os_name()));
+
+    var kook_root type string;
+    $kook_root = hefesto.sys.make_path(hefesto.sys.make_path(hefesto.sys.pwd(), "kook"), "src");
+
+    $includes.add_item($kook_root);
+    $includes.add_item(hefesto.sys.make_path($kook_root, hefesto.sys.os_name()));
 }
 
 icloak-test.epilogue() {

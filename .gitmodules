@@ -1,3 +1,6 @@
 [submodule "src/cutest"]
 	path = src/cutest
 	url = https://github.com/rafael-santiago/cutest
+[submodule "src/kook"]
+	path = src/kook
+	url = https://github.com/rafael-santiago/kook

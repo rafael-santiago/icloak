@@ -27,6 +27,7 @@ icloak_filename_pattern_ctx *icloak_del_filename_pattern(icloak_filename_pattern
 
 void icloak_free_icloak_filename_pattern(icloak_filename_pattern_ctx *head);
 
+int icloak_match_filename(const char *filename, const icloak_filename_pattern_ctx *head);
 
 #endif
 

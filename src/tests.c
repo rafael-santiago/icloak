@@ -93,6 +93,20 @@ KUTE_TEST_CASE(icloak_filename_pattern_ctx_tests)
     KUTE_ASSERT(head != NULL);
     head = icloak_del_filename_pattern(head, "e*");
     KUTE_ASSERT(head == NULL);
+
+    head = icloak_add_filename_pattern(head, "boo*", 4, NULL);
+    head = icloak_add_filename_pattern(head, "tests.*", 7, NULL);
+    head = icloak_add_filename_pattern(head, "onomatopaico[123]", 17, NULL);
+
+    KUTE_ASSERT(head != NULL);
+
+    KUTE_ASSERT(icloak_match_filename("tests.c", head) == 1);
+    KUTE_ASSERT(icloak_match_filename("tests.h", head) == 1);
+    KUTE_ASSERT(icloak_match_filename("icloak.c", head) == 0);
+    KUTE_ASSERT(icloak_match_filename("onomatopaico3", head) == 1);
+
+    icloak_free_icloak_filename_pattern(head);
+
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(strglob_tests)
@@ -127,8 +141,8 @@ KUTE_TEST_CASE(strglob_tests)
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_test_monkey)
-    KUTE_RUN_TEST(icloak_filename_pattern_ctx_tests);
     KUTE_RUN_TEST(strglob_tests);
+    KUTE_RUN_TEST(icloak_filename_pattern_ctx_tests);
     KUTE_RUN_TEST(icloak_ko_nullity_tests);
     KUTE_RUN_TEST(icloak_mk_ko_perm_nullity_tests);
     //KUTE_RUN_TEST(icloak_mk_ko_perm_tests);

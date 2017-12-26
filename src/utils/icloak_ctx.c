@@ -7,6 +7,7 @@
  */
 #include <utils/icloak_ctx.h>
 #include <utils/memory.h>
+#include <utils/strglob.h>
 
 static icloak_filename_pattern_ctx *icloak_get_filename_pattern_tail(icloak_filename_pattern_ctx *head);
 
@@ -133,4 +134,20 @@ static icloak_filename_pattern_ctx *icloak_get_filename_pattern_tail(icloak_file
         ;
 
     return hp;
+}
+
+int icloak_match_filename(const char *filename, const icloak_filename_pattern_ctx *head) {
+    const icloak_filename_pattern_ctx *hp;
+
+    if (head == NULL) {
+        return 0;
+    }
+
+    for (hp = head; hp != NULL; hp = hp->next) {
+        if (strglob(filename, hp->pattern)) {
+            return 1;
+        }
+    }
+
+    return 0;
 }
