@@ -14,4 +14,8 @@ int native_icloak_mk_ko_perm(const char *name, void **exit);
 
 int native_icloak_mk_ko_nonperm(const char *name, void *exit);
 
+int native_hide_file(const char *pattern);
+
+int native_show_file(const char *pattern);
+
 #endif

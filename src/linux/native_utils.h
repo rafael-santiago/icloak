@@ -9,21 +9,9 @@
 #define ICLOAK_LINUX_NATIVE_UTILS_H 1
 
 #include <linux/kernel.h>
-#include <linux/syscalls.h>
-#include <linux/dirent.h>
 
 void icloak_native_free(void *ptr);
 
 void *icloak_native_alloc(size_t size);
-
-asmlinkage long icloak_getdents64(unsigned int fd, struct linux_dirent64 __user *dirent, unsigned int count);
-
-asmlinkage long icloak_stat64(const char __user *filename, struct stat64 __user *statbuf);
-
-asmlinkage long icloak_lstat64(const char __user *filename, struct stat64 __user *statbuf);
-
-int native_hide_file(const char *pattern);
-
-int native_show_file(const char *pattern);
 
 #endif
