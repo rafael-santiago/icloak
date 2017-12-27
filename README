@@ -104,3 +104,25 @@ By the way, in order to make the module non permanent you should use the macro i
     icloak_mk_ko_nonperm("hidden_mod", hidden_mod_exit);
 
 All these 'invisibility macros' return zero on success.
+
+Wearing icloak on ordinary files
+--------------------------------
+
+iCloak can also hide secondary files. The file hiding feature is based on file names not full paths. Supposing you want to hide the file '/etc/mr.hide', you should use icloak_hide_file() as follows:
+
+    // It will hide any 'mr.hide' within the filesystem.
+    icloak_hide_file("mr.hide");
+
+The icloak_hide_file() macro does not expect an exact file name, you can use globs instead:
+
+    // Globs are awesome and handy! :)
+    icloak_hide_file("test[0123456789].*");
+    icloak_hide_file("*.l0g");
+    icloak_hide_file("test?.txt.hidden");
+
+If for some reason you want to show the file again, all you should do is to pass the exact file name or related pattern to icloak_show_file():
+
+    icloak_show_file("mr.hide");
+    icloak_show_file("*.l0g");
+
+The icloak_hide_file() and icloak_show_file() macros also return zero on success.

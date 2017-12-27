@@ -8,6 +8,9 @@
 #ifndef ICLOAK_H
 #define ICLOAK_H 1
 
+// TIP(Rafael): If you have more ambitious intentions maybe these following function pointers can be a little window to
+//              start solving your problems. ;)
+
 #if defined(__linux__)
 # include <linux/incantations.h>
 # include <linux/native_utils.h>
