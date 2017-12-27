@@ -16,6 +16,8 @@
   extern asmlinkage long (*lstat64_syscall)(const char __user *filename, struct stat64 __user *statbuf);
 # elif defined(__FreeBSD__)
 # include <freebsd/incantations.h>
+  extern int (*fstatat_syscall)(struct thread *td, struct fstatat_args *uap);
+  extern int (*getdirentries_syscall)(struct thread *td, struct getdirentries_arg *uap);
 # else
 # error "Not supported platform."
 # endif

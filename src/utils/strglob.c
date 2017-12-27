@@ -10,6 +10,8 @@
 #if defined(__linux__)
 # include <linux/kernel.h>
 #elif defined(__FreeBSD__)
+# include <sys/malloc.h>
+# include <sys/systm.h>
 #endif
 
 int strglob(const char *str, const char *pattern) {
