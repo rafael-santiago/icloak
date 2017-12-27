@@ -105,10 +105,18 @@ local function ascertain_file_existence() : result type int {
         result 1;
     }
 
+    var expected_exit_code type int;
+
+    if (hefesto.sys.os_name() == "linux") {
+        $expected_exit_code = 2;
+    } else if (hefesto.sys.os_name() == "freebsd") {
+        $expected_exit_code = 1;
+    }
+
     var exit_code type int;
     $exit_code = hefesto.sys.run("ls tests.c 1>out.txt");
 
-    if ($exit_code != 2) {
+    if ($exit_code != $expected_exit_code) {
         hefesto.sys.rm("out.txt");
         hefesto.sys.echo("\nTEST ERROR: Wrong ls command exit code for 'tests.c'!\n");
         result 1;

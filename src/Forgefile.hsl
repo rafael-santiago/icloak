@@ -43,12 +43,12 @@ icloak-test.prologue() {
 
 icloak-test.epilogue() {
     if (hefesto.sys.last_forge_result() == 0) {
-#        if (kBoOm("icloak-test.ko") == 0) {
+        if (kBoOm("icloak-test.ko") == 0) {
             hefesto.sys.echo("\nBUILD INFO: Done! You need to restart this machine if you want to re-run the tests because " +
                              "the test module is hidden within your kernel and it cannot be unloaded.\n");
-#        } else {
-#            hefesto.sys.echo("~~~ BUILD ERROR.\n");
-#            hefesto.project.abort(1);
-#        }
+        } else {
+            hefesto.sys.echo("~~~ BUILD ERROR.\n");
+            hefesto.project.abort(1);
+        }
     }
 }

