@@ -12,6 +12,8 @@
 # include <linux/kernel.h>
 #elif defined(__FreeBSD__)
 # include <sys/types.h>
+# include <sys/malloc.h>
+# include <sys/systm.h>
 #endif
 
 typedef struct icloak_filename_pattern {

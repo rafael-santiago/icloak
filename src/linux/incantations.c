@@ -187,7 +187,9 @@ int native_show_file(const char *pattern) {
             }
         }
 
+        g_icloak_mtx_init = 0;
         unlock_hidden_patterns_mutex
+
         mutex_destroy(&g_icloak_hidden_patterns_mtx);
 
         goto native_show_file_epilogue;
@@ -275,3 +277,9 @@ asmlinkage long icloak_stat64(const char __user *filename, struct stat64 __user 
 asmlinkage long icloak_lstat64(const char __user *filename, struct stat64 __user *statbuf) {
     return icloak_stat64(filename, statbuf);
 }
+
+#undef init_hidden_patterns_mutex
+
+#undef lock_hidden_patterns_mutex
+
+#undef unlock_hidden_patterns_mutex

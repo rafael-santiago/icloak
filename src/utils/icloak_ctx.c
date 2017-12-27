@@ -151,3 +151,5 @@ int icloak_match_filename(const char *filename, const icloak_filename_pattern_ct
 
     return 0;
 }
+
+#undef icloak_new_filename_pattern_entry
