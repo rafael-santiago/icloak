@@ -8,6 +8,9 @@
 #ifndef ICLOAK_LINUX_INCANTATIONS_H
 #define ICLOAK_LINUX_INCANTATIONS_H 1
 
+#include <linux/syscalls.h>
+#include <linux/dirent.h>
+
 int native_icloak_ko(const char *name);
 
 int native_icloak_mk_ko_perm(const char *name, void **exit);

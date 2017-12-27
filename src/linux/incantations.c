@@ -8,8 +8,6 @@
 #include <linux/incantations.h>
 #include <linux/get_modules_list.h>
 #include <linux/init.h>
-#include <linux/syscalls.h>
-#include <linux/dirent.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <utils/icloak_ctx.h>
