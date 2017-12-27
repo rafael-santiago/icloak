@@ -110,7 +110,7 @@ Wearing icloak on ordinary files
 
 iCloak can also hide secondary files. The file hiding feature is based on file names not full paths. Supposing you want to hide the file '/etc/mr.hide', you should use icloak_hide_file() as follows:
 
-    // It will hide any 'mr.hide' within the filesystem.
+    // It will hide any 'mr.hide' occurrence in the filesystem.
     icloak_hide_file("mr.hide");
 
 The icloak_hide_file() macro does not expect an exact file name, you can use globs instead:
