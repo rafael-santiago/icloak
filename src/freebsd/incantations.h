@@ -8,14 +8,6 @@
 #ifndef ICLOAK_FREEBSD_INCANTATIONS_H
 #define ICLOAK_FREEBSD_INCANTATIONS_H 1
 
-/*
-struct fstatat_args {
-    int fd;
-    char *path;
-    struct stat *buf;
-    int flag;
-};
-*/
 #include <sys/sysproto.h>
 
 int native_icloak_ko(const char *name);
