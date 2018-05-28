@@ -18,26 +18,26 @@ function kBoOm(ko type string) : result type int {
         }
         $exit_code = hefesto.sys.run("kldload " + $ko);
     } else if (hefesto.sys.os_name() == "netbsd") {
-	var oldcwd type string;
-	$oldcwd = hefesto.sys.pwd();
-	if (hefesto.sys.cd("stubkmod") == 0) {
-		hefesto.sys.echo("ERROR: Unable to build stubkmod.\n");
-		hefesto.project.abort(1);
-	}
-	hefesto.sys.forge("icloak-stub-kmod", "Forgefile.hsl", "");
-	if (hefesto.sys.last_forge_result() != 0) {
-		hefesto.project.abort(1);
-	}
-	hefesto.sys.cd($oldcwd);
+        var oldcwd type string;
+        $oldcwd = hefesto.sys.pwd();
+        if (hefesto.sys.cd("stubkmod") == 0) {
+            hefesto.sys.echo("ERROR: Unable to build stubkmod.\n");
+            hefesto.project.abort(1);
+        }
+        hefesto.sys.forge("icloak-stub-kmod", "Forgefile.hsl", "");
+        if (hefesto.sys.last_forge_result() != 0) {
+            hefesto.project.abort(1);
+        }
+        hefesto.sys.cd($oldcwd);
         $exit_code = hefesto.sys.run("modload stubkmod/icloak_stub_kmod.kmod");
-	if ($exit_code != 0) {
-		hefesto.project.abort(1);
-	}
-	if ($ko.match("^/.") == 0) {
-		$ko = "./" + $ko;
-	}
-	$ko.replace("\\.ko$", ".kmod");
-	$exit_code = hefesto.sys.run("modload " + $ko);
+        if ($exit_code != 0) {
+            hefesto.project.abort(1);
+        }
+        if ($ko.match("^/.") == 0) {
+            $ko = "./" + $ko;
+        }
+        $ko.replace("\\.ko$", ".kmod");
+        $exit_code = hefesto.sys.run("modload " + $ko);
     }
 
     if ($exit_code != 0) {
@@ -60,10 +60,10 @@ function kBoOm(ko type string) : result type int {
     $exit_code = try_to_unload($ko, $mod_name);
 
     if (hefesto.sys.os_name() == "netbsd") {
-	hefesto.sys.echo("INFO: Wait... Do not be afraid of me. Unloading the main test kernel module.\n");
-	hefesto.sys.run("sleep 5");
-	hefesto.sys.run("modunload icloak_test_monkey");
-	result $exit_code;
+        hefesto.sys.echo("INFO: Wait... Do not be afraid of me. Unloading the main test kernel module.\n");
+        hefesto.sys.run("sleep 5");
+        hefesto.sys.run("modunload icloak_test_monkey");
+        result $exit_code;
     }
 
     if ($exit_code == 0) {
@@ -114,9 +114,9 @@ local function try_to_unload(ko type string, module_name type string) : result t
         $regex.replace("\\.", "\\.");
         $regex = ".*" + $regex;
     } else if (hefesto.sys.os_name() == "netbsd") {
-	$regex = $module_name + "$";
+        $regex = $module_name + "$";
         $regex.replace("\\.", "\\.");
-	$regex = ".*" + $regex;
+        $regex = ".*" + $regex;
     }
 
     $lines = hefesto.sys.lines_from_file($modules_listing, $regex);
