@@ -21,7 +21,7 @@ function kBoOm(ko type string) : result type int {
 	if ($ko.match("^\\./") == 0) {
 	    $ko = "./" + $ko;
 	}
-	$ko.replace("\\.ko", "\\.kmod");
+	$ko.replace("\\.ko", ".kmod");
         $exit_code = hefesto.sys.run("modload " + $ko);
     }
 

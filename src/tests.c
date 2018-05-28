@@ -49,7 +49,7 @@ KUTE_TEST_CASE(icloak_mk_ko_perm_nullity_tests)
     KUTE_ASSERT(icloak_mk_ko_perm("parangaricutirimirruaru", &exit) != 0);
     KUTE_ASSERT(icloak_mk_ko_perm("parangaricutirimirruaru", NULL) != 0);
 #else
-    printf("Feature not available for NetBSD. Just skipping...\n");
+    uprintf("== Feature not available for NetBSD. Just skipping...\n");
 #endif
 KUTE_TEST_CASE_END
 
@@ -59,7 +59,7 @@ KUTE_TEST_CASE(icloak_mk_ko_perm_tests)
     KUTE_ASSERT(icloak_mk_ko_perm(ICLOAK_MODNAME, &exit) == 0);
     KUTE_ASSERT(icloak_mk_ko_nonperm(ICLOAK_MODNAME, exit) == 0);
 #else
-    printf("Feature not available for NetBSD. Just skipping...\n");
+    uprintf("== Feature not available for NetBSD. Just skipping...\n");
 #endif
 KUTE_TEST_CASE_END
 
@@ -158,14 +158,14 @@ KUTE_TEST_CASE(icloak_file_hiding_feature_tests)
     KUTE_ASSERT(icloak_hide_file("tests.c") == 0);
     KUTE_ASSERT(icloak_show_file("icloak.h") == 0);
 #else
-    printf("Feature not available for NetBSD. Just skipping.\n");
+    uprintf("== Feature not available for NetBSD. Just skipping.\n");
 #endif
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_test_monkey)
-    //KUTE_RUN_TEST(strglob_tests);
-    //KUTE_RUN_TEST(icloak_filename_pattern_ctx_tests);
-    //KUTE_RUN_TEST(icloak_ko_nullity_tests);
+    KUTE_RUN_TEST(strglob_tests);
+    KUTE_RUN_TEST(icloak_filename_pattern_ctx_tests);
+    KUTE_RUN_TEST(icloak_ko_nullity_tests);
     //KUTE_RUN_TEST(icloak_mk_ko_perm_nullity_tests);
     //KUTE_RUN_TEST(icloak_file_hiding_feature_tests);
     //KUTE_RUN_TEST(icloak_mk_ko_perm_tests);

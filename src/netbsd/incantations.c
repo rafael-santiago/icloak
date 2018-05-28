@@ -6,6 +6,10 @@ int native_icloak_ko(const char *name) {
 	int deleted = 0;
 	module_t *mp;
 
+	if (name == NULL) {
+		return 1;
+	}
+
 	mp = find_kmod(name);
 
 	if (mp != NULL) {
