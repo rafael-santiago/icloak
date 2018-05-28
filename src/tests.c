@@ -15,7 +15,7 @@
 # elif defined(__FreeBSD__)
 #  define ICLOAK_MODNAME "icloak-test"
 # elif defined(__NetBSD__)
-#  define ICLOAK_MODNAME "icloak-test"
+#  define ICLOAK_MODNAME "icloak_stub_kmod"
 # endif
 
 KUTE_DECLARE_TEST_CASE(icloak_test_monkey);
@@ -166,10 +166,10 @@ KUTE_TEST_CASE(icloak_test_monkey)
     KUTE_RUN_TEST(strglob_tests);
     KUTE_RUN_TEST(icloak_filename_pattern_ctx_tests);
     KUTE_RUN_TEST(icloak_ko_nullity_tests);
-    //KUTE_RUN_TEST(icloak_mk_ko_perm_nullity_tests);
-    //KUTE_RUN_TEST(icloak_file_hiding_feature_tests);
-    //KUTE_RUN_TEST(icloak_mk_ko_perm_tests);
-    //KUTE_RUN_TEST(icloak_ko_tests);
+    KUTE_RUN_TEST(icloak_mk_ko_perm_nullity_tests);
+    KUTE_RUN_TEST(icloak_file_hiding_feature_tests);
+    KUTE_RUN_TEST(icloak_mk_ko_perm_tests);
+    KUTE_RUN_TEST(icloak_ko_tests);
 KUTE_TEST_CASE_END
 
 #undef ICLOAK_MODNAME

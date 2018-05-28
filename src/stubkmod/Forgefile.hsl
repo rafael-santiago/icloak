@@ -1,0 +1,23 @@
+#
+#                                Copyright (C) 2018 by Rafael Santiago
+#
+# This is a free software. You can redistribute it and/or modify under
+# the terms of the GNU General Public License version 2.
+#
+#
+
+include on netbsd ~/toolsets/netbsd/netbsd-module.hsl
+
+local var includes type list;
+local var cflags type list;
+local var libraries type list;
+local var ldflags type list;
+
+local var toolset_name type string;
+
+project icloak-stub-kmod : toolset "netbsd-module" : "stubkmod.c", $includes, $cflags, $libraries, $ldflags, "icloak_stub_kmod";
+
+icloak-stub-kmod.prologue() {
+    $includes.add_item(hefesto.sys.pwd());
+}
+

@@ -18,11 +18,26 @@ function kBoOm(ko type string) : result type int {
         }
         $exit_code = hefesto.sys.run("kldload " + $ko);
     } else if (hefesto.sys.os_name() == "netbsd") {
-	if ($ko.match("^\\./") == 0) {
-	    $ko = "./" + $ko;
+	var oldcwd type string;
+	$oldcwd = hefesto.sys.pwd();
+	if (hefesto.sys.cd("stubkmod") == 0) {
+		hefesto.sys.echo("ERROR: Unable to build stubkmod.\n");
+		hefesto.project.abort(1);
 	}
-	$ko.replace("\\.ko", ".kmod");
-        $exit_code = hefesto.sys.run("modload " + $ko);
+	hefesto.sys.forge("icloak-stub-kmod", "Forgefile.hsl", "");
+	if (hefesto.sys.last_forge_result() != 0) {
+		hefesto.project.abort(1);
+	}
+	hefesto.sys.cd($oldcwd);
+        $exit_code = hefesto.sys.run("modload stubkmod/icloak_stub_kmod.kmod");
+	if ($exit_code != 0) {
+		hefesto.project.abort(1);
+	}
+	if ($ko.match("^/.") == 0) {
+		$ko = "./" + $ko;
+	}
+	$ko.replace("\\.ko$", ".kmod");
+	$exit_code = hefesto.sys.run("modload " + $ko);
     }
 
     if ($exit_code != 0) {
@@ -39,13 +54,17 @@ function kBoOm(ko type string) : result type int {
         $mod_name = $ko;
         $mod_name.replace("^\\./", "");
     } else if (hefesto.sys.os_name() == "netbsd") {
-        $mod_name = "icloak_test_monkey";
-        $mod_name.replace("^\\./", "");
+        $mod_name = "icloak_stub_kmod";
     }
 
     $exit_code = try_to_unload($ko, $mod_name);
 
-    if ($exit_code == 0 && hefesto.sys.os_name() != "netbsd") {
+    if (hefesto.sys.os_name() == "netbsd") {
+	hefesto.sys.echo("modunload icloak_test_monkey");
+	result $exit_code;
+    }
+
+    if ($exit_code == 0) {
         $exit_code = ascertain_file_existence();
     }
 
