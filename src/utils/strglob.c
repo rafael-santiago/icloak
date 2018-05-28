@@ -12,6 +12,9 @@
 #elif defined(__FreeBSD__)
 # include <sys/malloc.h>
 # include <sys/systm.h>
+#elif defined(__NetBSD__)
+# include <sys/malloc.h>
+# include <sys/systm.h>
 #endif
 
 int strglob(const char *str, const char *pattern) {

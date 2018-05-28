@@ -21,6 +21,8 @@
 # include <freebsd/incantations.h>
   extern int (*fstatat_syscall)(struct thread *td, struct fstatat_args *uap);
   extern int (*getdirentries_syscall)(struct thread *td, struct getdirentries_args *uap);
+# elif defined(__NetBSD__)
+# include <netbsd/incantations.h>
 # else
 # error "Not supported platform."
 # endif

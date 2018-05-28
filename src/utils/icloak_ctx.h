@@ -14,6 +14,10 @@
 # include <sys/types.h>
 # include <sys/malloc.h>
 # include <sys/systm.h>
+#elif defined(__NetBSD__)
+# include <sys/types.h>
+# include <sys/malloc.h>
+# include <sys/systm.h>
 #endif
 
 typedef struct icloak_filename_pattern {

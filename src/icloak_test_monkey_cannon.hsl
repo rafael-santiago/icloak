@@ -17,6 +17,12 @@ function kBoOm(ko type string) : result type int {
             $ko = "./" + $ko;
         }
         $exit_code = hefesto.sys.run("kldload " + $ko);
+    } else if (hefesto.sys.os_name() == "netbsd") {
+	if ($ko.match("^\\./") == 0) {
+	    $ko = "./" + $ko;
+	}
+	$ko.replace("\\.ko", "\\.kmod");
+        $exit_code = hefesto.sys.run("modload " + $ko);
     }
 
     if ($exit_code != 0) {
@@ -32,11 +38,14 @@ function kBoOm(ko type string) : result type int {
     } else if (hefesto.sys.os_name() == "freebsd") {
         $mod_name = $ko;
         $mod_name.replace("^\\./", "");
+    } else if (hefesto.sys.os_name() == "netbsd") {
+        $mod_name = "icloak_test_monkey";
+        $mod_name.replace("^\\./", "");
     }
 
     $exit_code = try_to_unload($ko, $mod_name);
 
-    if ($exit_code == 0) {
+    if ($exit_code == 0 && hefesto.sys.os_name() != "netbsd") {
         $exit_code = ascertain_file_existence();
     }
 
@@ -53,6 +62,8 @@ local function try_to_unload(ko type string, module_name type string) : result t
             $ko = "./" + $ko;
         }
         $exit_code = hefesto.sys.run("kldunload " + $ko);
+    } else if (hefesto.sys.os_name() == "netbsd") {
+        $exit_code = hefesto.sys.run("modunload " + $module_name);
     }
 
     if ($exit_code == 0) {
@@ -68,6 +79,8 @@ local function try_to_unload(ko type string, module_name type string) : result t
         hefesto.sys.run("lsmod > " + $modules_listing);
     } else if (hefesto.sys.os_name() == "freebsd") {
         hefesto.sys.run("kldstat > " + $modules_listing);
+    } else if (hefesto.sys.os_name() == "netbsd") {
+        hefesto.sys.run("modstat > " + $modules_listing);
     }
 
     var lines type list;
@@ -79,6 +92,10 @@ local function try_to_unload(ko type string, module_name type string) : result t
         $regex = $module_name + "$";
         $regex.replace("\\.", "\\.");
         $regex = ".*" + $regex;
+    } else if (hefesto.sys.os_name() == "netbsd") {
+	$regex = $module_name + "$";
+        $regex.replace("\\.", "\\.");
+	$regex = ".*" + $regex;
     }
 
     $lines = hefesto.sys.lines_from_file($modules_listing, $regex);

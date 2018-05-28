@@ -12,6 +12,8 @@
 # include <linux/native_utils.h>
 #elif defined(__FreeBSD__)
 # include <freebsd/native_utils.h>
+#elif defined(__NetBSD__)
+# include <netbsd/native_utils.h>
 #endif
 
 #define icloak_free(p) icloak_native_free(p)
