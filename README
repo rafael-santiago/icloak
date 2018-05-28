@@ -4,7 +4,7 @@ iCloak
 What is this?
 -------------
 
-iCloak is a simple collection of codes for making invisible your stuff in kernel mode. This is done merely by using DKOM techiques. Until now it works in Linux (4.4.x or later) and FreeBSD.
+iCloak is a simple collection of codes for making invisible your stuff in kernel mode. This is done merely by using DKOM techiques. Until now it works in Linux (4.4.x or later), FreeBSD and NetBSD.
 
 How can I clone this?
 ---------------------
@@ -38,6 +38,10 @@ Once the build system well installed, you should clone another repo of mine:
 
     you@somewhere_over_a_tainted_rainbow:~/src/helios# hefesto --install=freebsd-module-toolset
 
+#elif defined(__NetBSD__)
+
+    you@somewhere_over_a_tainted_rainbow:~/src/helios# hefesto --install=netbsd-module-toolset
+
 #else
 
 # error "what are you doing here?"
@@ -64,6 +68,8 @@ Now your build system copy knows how to make the icloak tests, so let's go back 
     you@somewhere_over_a_tainted_rainbow:~/src/icloak/src# _
 
 In normal conditions you will get the output described above. You should notice that will be possible successfully execute the tests only once before restarting. Because the test module hide itself in order to ascertain that all 'invisibility incantation' is working well.
+
+If you are in NetBSD environment you are able to re-run the test without rebooting your machine.
 
 Wearing icloak on your LKM
 --------------------------
@@ -105,6 +111,8 @@ By the way, in order to make the module non permanent you should use the macro i
 
 All these 'invisibility macros' return zero on success.
 
+Until now icloak_mk_ko_perm() and icloak_mk_ko_nonperm() are not available for NetBSD.
+
 Wearing icloak on ordinary files
 --------------------------------
 
@@ -126,3 +134,5 @@ If for some reason you want to show the file again, all you should do is to pass
     icloak_show_file("*.l0g");
 
 The icloak_hide_file() and icloak_show_file() macros also return zero on success.
+
+Until now the file hiding feature is not available for NetBSD.
