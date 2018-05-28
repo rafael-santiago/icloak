@@ -60,7 +60,9 @@ function kBoOm(ko type string) : result type int {
     $exit_code = try_to_unload($ko, $mod_name);
 
     if (hefesto.sys.os_name() == "netbsd") {
-	hefesto.sys.echo("modunload icloak_test_monkey");
+	hefesto.sys.echo("INFO: Wait... Do not be afraid of me. Unloading the main test kernel module.\n");
+	hefesto.sys.run("sleep 5");
+	hefesto.sys.run("modunload icloak_test_monkey");
 	result $exit_code;
     }
 
