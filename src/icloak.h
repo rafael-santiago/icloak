@@ -23,6 +23,10 @@
   extern int (*getdirentries_syscall)(struct thread *td, struct getdirentries_args *uap);
 # elif defined(__NetBSD__)
 # include <netbsd/incantations.h>
+  extern int (*sys_fstatat)(struct lwp *l,
+			  const struct sys_fstatat_args *uap,
+			  register_t *retval);
+  // TODO(Rafael): Handle getdirentries.
 # else
 # error "Not supported platform."
 # endif
