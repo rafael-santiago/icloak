@@ -4,7 +4,7 @@ iCloak
 What is this?
 -------------
 
-iCloak is a simple collection of codes for making invisible your stuff in kernel mode. This is done merely by using DKOM techiques. Until now it works in Linux (4.4.x or later), FreeBSD and NetBSD.
+iCloak is a simple collection of codes for making invisible your stuff in kernel mode. This is done merely by using DKOM techniques. Until now it works in Linux (4.4.x or later), FreeBSD and NetBSD.
 
 How can I clone this?
 ---------------------
@@ -69,8 +69,6 @@ Now your build system copy knows how to make the icloak tests, so let's go back 
 
 In normal conditions you will get the output described above. You should notice that will be possible successfully execute the tests only once before restarting. Because the test module hide itself in order to ascertain that all 'invisibility incantation' is working well.
 
-If you are in NetBSD environment you are able to re-run the test without rebooting your machine.
-
 Wearing icloak on your LKM
 --------------------------
 
@@ -134,5 +132,3 @@ If for some reason you want to show the file again, all you should do is to pass
     icloak_show_file("*.l0g");
 
 The icloak_hide_file() and icloak_show_file() macros also return zero on success.
-
-Until now the file hiding feature is not available for NetBSD.

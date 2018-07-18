@@ -66,15 +66,11 @@ function kBoOm(ko type string) : result type int {
     if (hefesto.sys.os_name() == "netbsd") {
         hefesto.sys.echo("INFO: Wait... Do not be afraid of me. Unloading the main test kernel module.\n");
         hefesto.sys.run("sleep 5");
-	hefesto.sys.echo("WARN: Do not remove icloak_test_monkey.kmod 
-unless you want a kernel panic. Reboot your system instead.\n");
+        hefesto.sys.echo("WARN: Do not remove icloak_test_monkey.kmod  unless you want a kernel panic.\n"
+                         "      Reboot your system instead.\n");
         #hefesto.sys.run("modunload icloak_test_monkey");
         result $exit_code;
     }
-
-    #if ($exit_code == 0) {
-    #    $exit_code = ascertain_file_existence();
-    #}
 
     result $exit_code;
 }

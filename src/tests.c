@@ -153,13 +153,9 @@ KUTE_TEST_CASE(strglob_tests)
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_file_hiding_feature_tests)
-//#if !defined(__NetBSD__)
     KUTE_ASSERT(icloak_hide_file("icloak.h") == 0);
     KUTE_ASSERT(icloak_hide_file("tests.c") == 0);
     KUTE_ASSERT(icloak_show_file("icloak.h") == 0);
-//#else
-//    uprintf("== Feature not available for NetBSD. Just skipping.\n");
-//#endif
 KUTE_TEST_CASE_END
 
 KUTE_TEST_CASE(icloak_test_monkey)

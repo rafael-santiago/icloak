@@ -24,10 +24,10 @@
 # elif defined(__NetBSD__)
 # include <netbsd/incantations.h>
 # include <sys/syscallargs.h>
-/*  extern int (*sys_fstatat)(struct lwp *l,
-			  const struct sys_fstatat_args *uap,
-			  register_t *retval);*/
-  // TODO(Rafael): Handle getdirentries.
+  extern int (*fstatat_syscall)(struct lwp *l, const struct sys_fstatat_args *uap, register_t *retval) ;
+  extern int (*___stat50_syscall)(struct lwp *l, const struct sys___stat50_args *uap, register_t *retval);
+  extern int (*___lstat50_syscall)(struct lwp *l, const struct sys___lstat50_args *uap, register_t *retval) ;
+  extern int (*___getdents30_syscall)(struct lwp *l, const struct sys___getdents30_args *uap, register_t *retval);
 # else
 # error "Not supported platform."
 # endif
