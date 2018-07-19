@@ -31,6 +31,15 @@ icloak-test.preloading() {
 project icloak-test : toolset $toolset_name : "test/tests.c", $includes, $cflags, $libraries, $ldflags, "icloak-test";
 
 icloak-test.prologue() {
+    var option type list;
+
+    $option = hefesto.sys.get_option("build-skip");
+
+    if ($option.index_of("icloak") > -1) {
+        hefesto.sys.echo("BUILD INFO: icloak build was skipped.\n");
+        hefesto.project.abort(0);
+    }
+
     $cflags.add_item("-DICLOAK_TESTS=1");
 
     $includes.add_item(hefesto.sys.pwd());
