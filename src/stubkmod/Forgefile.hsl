@@ -7,6 +7,7 @@
 #
 
 include on netbsd ~/toolsets/netbsd/netbsd-module.hsl
+include on linux, freebsd ~/toolsets/null/null.hsl
 
 local var includes type list;
 local var cflags type list;
@@ -15,9 +16,15 @@ local var ldflags type list;
 
 local var toolset_name type string;
 
-project icloak-stub-kmod : toolset "netbsd-module" : "stubkmod.c", $includes, $cflags, $libraries, $ldflags, "icloak_stub_kmod";
+project icloak-stub-kmod : toolset $toolset_name : "stubkmod.c", $includes, $cflags, $libraries, $ldflags, "icloak_stub_kmod";
 
 icloak-stub-kmod.preloading() {
+    if (hefesto.sys.os_name() != "netbsd") {
+        $toolset_name = "no-tool-any-set";
+    } else {
+        $toolset_name = "netbsd-module";
+    }
+
     var option type list;
 
     $option = hefesto.sys.get_option("build-skip");
