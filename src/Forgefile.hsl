@@ -36,6 +36,7 @@ icloak-test.prologue() {
     $includes.add_item(hefesto.sys.pwd());
     $includes.add_item(hefesto.sys.make_path(hefesto.sys.pwd(), "utils"));
     $includes.add_item(hefesto.sys.make_path(hefesto.sys.pwd(), hefesto.sys.os_name()));
+    $includes.add_item(hefesto.sys.make_path(hefesto.sys.pwd(), "test"));
 
     var kook_root type string;
     $kook_root = hefesto.sys.make_path(hefesto.sys.make_path(hefesto.sys.pwd(), "kook"), "src");
