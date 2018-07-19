@@ -18,6 +18,15 @@ local var toolset_name type string;
 project icloak-stub-kmod : toolset "netbsd-module" : "stubkmod.c", $includes, $cflags, $libraries, $ldflags, "icloak_stub_kmod";
 
 icloak-stub-kmod.prologue() {
+    var option type list;
+
+    $option = hefesto.sys.get_option("build-skip");
+
+    if ($option.index_of("icloak") > -1) {
+        hefesto.sys.echo("BUILD INFO: icloak build was skipped.\n");
+        hefesto.project.abort(0);
+    }
+
     $includes.add_item(hefesto.sys.pwd());
 }
 
