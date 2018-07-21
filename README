@@ -4,7 +4,8 @@ iCloak
 What is this?
 -------------
 
-iCloak is a simple collection of codes for making invisible your stuff in kernel mode. This is done merely by using DKOM techniques. Until now it works in Linux (4.4.x or later), FreeBSD and NetBSD.
+iCloak is a simple collection of codes for making invisible your stuff in kernel mode. This is done merely by using DKOM 
+techniques. Until now it works in Linux (4.4.x or later), FreeBSD and NetBSD.
 
 How can I clone this?
 ---------------------
@@ -22,7 +23,9 @@ or:
 How can I build it?
 -------------------
 
-You should not build anything. All you should do is to include the icloak src sub-directory and the platform dependent code (within src/<platform-name>) in your own LKM stuff. Anyway, if you want to execute the icloak tests you need to install my build system (https://github.com/rafael-santiago/hefesto).
+You should not build anything. All you should do is to include the icloak src sub-directory and the platform dependent 
+code (within src/<platform-name>) in your own LKM stuff. Anyway, if you want to execute the icloak tests you need to 
+install my build system (https://github.com/rafael-santiago/hefesto).
 
 Once the build system well installed, you should clone another repo of mine:
 
@@ -67,7 +70,9 @@ Now your build system copy knows how to make the icloak tests, so let's go back 
     [  210.575002] *** all tests passed. [4 test(s) ran]
     you@somewhere_over_a_tainted_rainbow:~/src/icloak/src# _
 
-In normal conditions you will get the output described above. You should notice that will be possible successfully execute the tests only once before restarting. Because the test module hide itself in order to ascertain that all 'invisibility incantation' is working well.
+In normal conditions you will get the output described above. You should notice that will be possible successfully execute 
+the tests only once before restarting. Because the test module hide itself in order to ascertain that all 'invisibility 
+incantation' is working well.
 
 Wearing icloak on your LKM
 --------------------------
@@ -80,7 +85,8 @@ Pretty simple. All you should do is to include the main icloak header:
 
     icloak_ko("hidden_mod");
 
-There is a trick to get a better invisibility in FreeBSD, you should let the kernel object file with the same name used for naming your module during the struct 'moduledata_t' definition.
+There is a trick to get a better invisibility in FreeBSD, you should let the kernel object file with the same name used 
+for naming your module during the struct 'moduledata_t' definition.
 
 You can also include two icloak_ko():
 
@@ -97,7 +103,8 @@ You also can make your LKM permanent by using the macro icloak_mk_ko_perm():
 
     icloak_mk_ko_perm("hidden_mod", NULL);
 
-The second argument of icloak_mk_ko_perm() is a (void **). When not null it will point to the old exit module's function. This is handy when you intend to make it non permanent again:
+The second argument of icloak_mk_ko_perm() is a (void **). When not null it will point to the old exit module's function. 
+This is handy when you intend to make it non permanent again:
 
     void *hidden_mod_exit;
 
@@ -114,7 +121,8 @@ Until now icloak_mk_ko_perm() and icloak_mk_ko_nonperm() are not available for N
 Wearing icloak on ordinary files
 --------------------------------
 
-iCloak can also hide secondary files. The file hiding feature is based on file names not full paths. Supposing you want to hide the file '/etc/mr.hide', you should use icloak_hide_file() as follows:
+iCloak can also hide secondary files. The file hiding feature is based on file names not full paths. Supposing you want to 
+hide the file '/etc/mr.hide', you should use icloak_hide_file() as follows:
 
     // It will hide any 'mr.hide' occurrence in the filesystem.
     icloak_hide_file("mr.hide");
@@ -126,7 +134,8 @@ The icloak_hide_file() macro does not expect an exact file name, you can use glo
     icloak_hide_file("*.l0g");
     icloak_hide_file("test?.txt.hidden");
 
-If for some reason you want to show the file again, all you should do is to pass the exact file name or related pattern to icloak_show_file():
+If for some reason you want to show the file again, all you should do is to pass the exact file name or related pattern to 
+icloak_show_file():
 
     icloak_show_file("mr.hide");
     icloak_show_file("*.l0g");
