@@ -9,7 +9,7 @@
 include on linux ~/toolsets/linux/linux-module.hsl
 include on freebsd ~/toolsets/freebsd/freebsd-module.hsl
 include on netbsd ~/toolsets/netbsd/netbsd-module.hsl
-include on windows ~/toolsets/null/null.hsl
+include on windows,minix,openbsd ~/toolsets/null/null.hsl
 include icloak_test_monkey_cannon.hsl
 
 local var includes type list;
@@ -26,7 +26,7 @@ icloak-test.preloading() {
         $toolset_name = "freebsd-kld";
     } else if (hefesto.sys.os_name() == "netbsd") {
         $toolset_name = "netbsd-module";
-    } else if (hefesto.sys.os_name() == "windows") {
+    } else {
         $toolset_name = "no-tool-any-set-lkm";
     }
 }
