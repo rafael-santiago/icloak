@@ -143,7 +143,8 @@ KUTE_TEST_CASE(strglob_tests)
         {                           "a9",  "a[1234567890]", 1 },
         { "abcdefghijhklmnopqrstuvwxyz1", " a[1234567890]", 0 },
         { "abcdefghijhklmnopqrstuvwxyz0", "a*[1234567890]", 1 },
-        {                            "x",             "a*", 0 }
+        {                            "x",             "a*", 0 },
+        {                            ".",    "*[Gg]lenda*", 0 },
     };
     size_t tests_nr = sizeof(tests) / sizeof(tests[0]), t;
 

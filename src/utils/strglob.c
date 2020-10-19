@@ -26,6 +26,10 @@ int strglob(const char *str, const char *pattern) {
         return 0;
     }
 
+    if (strcmp(pattern, "*") == 0 || *pattern == 0) {
+        return 1;
+    }
+
     sp = str;
     sp_end = sp + strlen(sp);
     p = pattern;
@@ -34,7 +38,7 @@ int strglob(const char *str, const char *pattern) {
     while (matches && p != p_end && sp != sp_end) {
         switch (*p) {
             case '*':
-                matches = (*(p + 1) == 0) || (*(sp + 1) == 0);
+                matches = (*(p + 1) == 0) && (*(sp + 1) == 0);
 
                 while (!matches && sp != sp_end) {
                     matches = strglob(sp, p + 1);
