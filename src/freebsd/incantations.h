@@ -8,6 +8,7 @@
 #ifndef ICLOAK_FREEBSD_INCANTATIONS_H
 #define ICLOAK_FREEBSD_INCANTATIONS_H 1
 
+#include <sys/types.h>
 #include <sys/sysproto.h>
 
 int native_icloak_ko(const char *name);
