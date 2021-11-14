@@ -9,6 +9,7 @@
 
 #if defined(__linux__)
 # include <linux/kernel.h>
+# include <linux/string.h>
 #elif defined(__FreeBSD__)
 # include <sys/malloc.h>
 # include <sys/systm.h>
