@@ -38,4 +38,5 @@ void *get_modules_list(void) {
 }
 #endif
 
+#undef HAS_KALLSYMS_LOOKUP_NAME_EXPORT
 #undef ICLOAK_LNX_MODULES_LIST_NAME
